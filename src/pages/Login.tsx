@@ -1,30 +1,62 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
+import { useNavigate, useSearchParams } from 'react-router-dom';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Separator } from '@/components/ui/separator';
 import { Alert, AlertDescription } from '@/components/ui/alert';
-import { Eye, EyeOff, Mail, Lock, Bot } from 'lucide-react';
+import { Eye, EyeOff, Mail, Lock, Bot, Loader2 } from 'lucide-react';
+import { useAuth } from '@/contexts/AuthContext';
+import { FirebaseConfigAlert } from '@/components/ui/firebase-config-alert';
 
 export default function Login() {
   const [isLogin, setIsLogin] = useState(true);
   const [showPassword, setShowPassword] = useState(false);
+  const [loading, setLoading] = useState(false);
   const [formData, setFormData] = useState({
     email: '',
     password: '',
     confirmPassword: ''
   });
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const { login, signup, currentUser } = useAuth();
+  const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
+  const telegramId = searchParams.get('telegram_id');
+
+  useEffect(() => {
+    if (currentUser) {
+      navigate('/');
+    }
+  }, [currentUser, navigate]);
+
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    // Handle login/signup logic here
-    console.log('Form submitted:', formData);
+    
+    if (!isLogin && formData.password !== formData.confirmPassword) {
+      return;
+    }
+
+    setLoading(true);
+    try {
+      if (isLogin) {
+        await login(formData.email, formData.password);
+      } else {
+        await signup(formData.email, formData.password, telegramId || undefined);
+      }
+      navigate('/');
+    } catch (error) {
+      // Error handling is done in the auth context
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-background to-muted p-4">
       <div className="w-full max-w-md space-y-6">
+        <FirebaseConfigAlert />
         {/* Logo */}
         <div className="text-center space-y-2">
           <div className="mx-auto w-16 h-16 bg-primary rounded-2xl flex items-center justify-center">
@@ -108,8 +140,15 @@ export default function Login() {
               )}
 
               {/* Submit Button */}
-              <Button type="submit" className="w-full">
-                {isLogin ? 'Sign In' : 'Create Account'}
+              <Button type="submit" className="w-full" disabled={loading}>
+                {loading ? (
+                  <>
+                    <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                    {isLogin ? 'Signing In...' : 'Creating Account...'}
+                  </>
+                ) : (
+                  isLogin ? 'Sign In' : 'Create Account'
+                )}
               </Button>
             </form>
 
@@ -139,6 +178,15 @@ export default function Login() {
             </div>
           </CardContent>
         </Card>
+
+        {/* Telegram Notice */}
+        {telegramId && (
+          <Alert>
+            <AlertDescription className="text-center text-sm">
+              Your Telegram account will be linked to this account for notifications.
+            </AlertDescription>
+          </Alert>
+        )}
 
         {/* Security Notice */}
         <Alert>
