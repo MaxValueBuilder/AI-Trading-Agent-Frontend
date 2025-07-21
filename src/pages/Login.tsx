@@ -9,6 +9,7 @@ import { Alert, AlertDescription } from '@/components/ui/alert';
 import { Eye, EyeOff, Mail, Lock, Bot, Loader2 } from 'lucide-react';
 import { useAuth } from '@/contexts/AuthContext';
 import { FirebaseConfigAlert } from '@/components/ui/firebase-config-alert';
+import cryptoBg from '@/assets/crypto-trading-bg.jpg';
 
 export default function Login() {
   const [isLogin, setIsLogin] = useState(true);
@@ -54,8 +55,18 @@ export default function Login() {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-background to-muted p-4">
-      <div className="w-full max-w-md space-y-6">
+    <div 
+      className="min-h-screen flex items-center justify-center p-4 relative"
+      style={{
+        backgroundImage: `url(${cryptoBg})`,
+        backgroundSize: 'cover',
+        backgroundPosition: 'center',
+        backgroundRepeat: 'no-repeat'
+      }}
+    >
+      {/* Dark overlay for better text readability */}
+      <div className="absolute inset-0 bg-background/80 backdrop-blur-sm"></div>
+      <div className="w-full max-w-md space-y-6 relative z-10">
         <FirebaseConfigAlert />
         {/* Logo */}
         <div className="text-center space-y-2">
