@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
+import { jwtDecode } from "jwt-decode";
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -8,7 +9,8 @@ import { Separator } from '@/components/ui/separator';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { Eye, EyeOff, Mail, Lock, Bot, Loader2 } from 'lucide-react';
 import { useAuth } from '@/contexts/AuthContext';
-import { FirebaseConfigAlert } from '@/components/ui/firebase-config-alert';
+import cryptoBg from '@/assets/crypto-trading-bg.jpg';
+
 
 export default function Login() {
   const [isLogin, setIsLogin] = useState(true);
@@ -23,7 +25,19 @@ export default function Login() {
   const { login, signup, currentUser } = useAuth();
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
-  const telegramId = searchParams.get('telegram_id');
+  const token = searchParams.get('token');
+  let telegramId: string | undefined = undefined;
+  let coin: string | undefined = undefined;
+
+  if (token) {
+    try {
+      const decoded: any = jwtDecode(token);
+      telegramId = decoded.telegram_id;
+      coin = decoded.coin;
+    } catch (e) {
+      // handle invalid token
+    }
+  }
 
   useEffect(() => {
     if (currentUser) {
@@ -38,9 +52,12 @@ export default function Login() {
       return;
     }
 
+    console.log("This is telegram id    ------->", telegramId);
+
     setLoading(true);
     try {
       if (isLogin) {
+        
         await login(formData.email, formData.password);
       } else {
         await signup(formData.email, formData.password, telegramId || undefined);
@@ -54,9 +71,19 @@ export default function Login() {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-background to-muted p-4">
-      <div className="w-full max-w-md space-y-6">
-        <FirebaseConfigAlert />
+    <div 
+      className="min-h-screen flex items-center justify-center p-4 relative"
+      style={{
+        backgroundImage: `url(${cryptoBg})`,
+        backgroundSize: 'cover',
+        backgroundPosition: 'center',
+        backgroundRepeat: 'no-repeat'
+      }}
+    >
+      {/* Dark overlay for better text readability */}
+      <div className="absolute inset-0 bg-background/80 backdrop-blur-sm"></div>
+      <div className="w-full max-w-md space-y-6 relative z-10">
+    
         {/* Logo */}
         <div className="text-center space-y-2">
           <div className="mx-auto w-16 h-16 bg-primary rounded-2xl flex items-center justify-center">

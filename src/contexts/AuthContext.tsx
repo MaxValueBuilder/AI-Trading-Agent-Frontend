@@ -31,7 +31,9 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
   async function signup(email: string, password: string, telegramId?: string) {
     try {
+      console.log("--------->", email, telegramId);
       const result = await createUserWithEmailAndPassword(auth, email, password);
+      console.log("---------> email and telegram Id", email, telegramId);
       
       // Save user data to Firestore
       await setDoc(doc(db, 'users', result.user.uid), {
@@ -40,6 +42,8 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         createdAt: new Date().toISOString(),
         ...(telegramId && { telegramId })
       });
+
+      console.log("====================>")
 
       // Store in localStorage
       localStorage.setItem('user', JSON.stringify({
