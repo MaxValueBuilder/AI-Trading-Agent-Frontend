@@ -41,7 +41,6 @@ export default function Dashboard({ registerRefresh }: DashboardProps) {
   const [pendingCoin, setPendingCoin] = useState<string | null>(null);
 
   const fetchSignals = useCallback(async () => {
-    console.log("----------------> ");0
     setLoading(true);
     setError(null);
     try {

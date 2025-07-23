@@ -50,6 +50,38 @@ npm run dev
 - Click on "New codespace" to launch a new Codespace environment.
 - Edit files directly within the Codespace and commit and push your changes once you're done.
 
+## Environment Setup
+
+### Local Development
+
+Create a `.env` file in the root directory with the following variables:
+
+```env
+# Backend API URL
+VITE_BACKEND_URL=http://localhost:8000
+
+# Firebase Configuration (if needed)
+# VITE_FIREBASE_API_KEY=your_firebase_api_key
+# VITE_FIREBASE_AUTH_DOMAIN=your_firebase_auth_domain
+# VITE_FIREBASE_PROJECT_ID=your_firebase_project_id
+```
+
+### Vercel Deployment
+
+When deploying to Vercel, you need to set environment variables in the Vercel dashboard:
+
+1. Go to your Vercel project dashboard
+2. Navigate to **Settings** → **Environment Variables**
+3. Add the following variable:
+   - **Name**: `VITE_BACKEND_URL`
+   - **Value**: Your production backend URL (e.g., `https://your-backend-domain.com`)
+   - **Environment**: Select all environments (Production, Preview, Development)
+
+**Important**:
+
+- In Vite, environment variables must be prefixed with `VITE_` to be accessible in the client-side code
+- After adding environment variables in Vercel, redeploy your application for changes to take effect
+
 ## What technologies are used for this project?
 
 This project is built with:

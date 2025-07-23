@@ -1,7 +1,13 @@
 // API utility for backend integration
 import { getAuth } from 'firebase/auth';
 
+// Environment-aware BASE_URL configuration
 const BASE_URL = import.meta.env.VITE_BACKEND_URL || 'http://localhost:8000';
+
+// Log the BASE_URL for debugging (remove in production)
+console.log('Environment:', import.meta.env.MODE);
+console.log('BASE_URL:', BASE_URL);
+console.log('VITE_BACKEND_URL from env:', import.meta.env.VITE_BACKEND_URL);
 
 async function getIdToken() {
   const auth = getAuth();

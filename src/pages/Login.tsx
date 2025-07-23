@@ -1,16 +1,15 @@
-import React, { useState, useEffect } from 'react';
-import { useNavigate, useSearchParams } from 'react-router-dom';
+import React, { useState, useEffect } from "react";
+import { useNavigate, useSearchParams } from "react-router-dom";
 import { jwtDecode } from "jwt-decode";
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
-import { Separator } from '@/components/ui/separator';
-import { Alert, AlertDescription } from '@/components/ui/alert';
-import { Eye, EyeOff, Mail, Lock, Bot, Loader2 } from 'lucide-react';
-import { useAuth } from '@/contexts/AuthContext';
-import cryptoBg from '@/assets/crypto-trading-bg.jpg';
-
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Separator } from "@/components/ui/separator";
+import { Alert, AlertDescription } from "@/components/ui/alert";
+import { Eye, EyeOff, Mail, Lock, Bot, Loader2 } from "lucide-react";
+import { useAuth } from "@/contexts/AuthContext";
+import cryptoBg from "@/assets/crypto-trading-bg.jpg";
 
 export default function Login() {
   const [isLogin, setIsLogin] = useState(true);
@@ -18,9 +17,9 @@ export default function Login() {
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [loading, setLoading] = useState(false);
   const [formData, setFormData] = useState({
-    email: '',
-    password: '',
-    confirmPassword: ''
+    email: "",
+    password: "",
+    confirmPassword: "",
   });
 
   const { login, signup, currentUser } = useAuth();
@@ -28,13 +27,13 @@ export default function Login() {
 
   useEffect(() => {
     if (currentUser) {
-      navigate('/');
+      navigate("/");
     }
   }, [currentUser, navigate]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    
+
     if (!isLogin && formData.password !== formData.confirmPassword) {
       return;
     }
@@ -42,12 +41,11 @@ export default function Login() {
     setLoading(true);
     try {
       if (isLogin) {
-        
         await login(formData.email, formData.password);
       } else {
-        await signup(formData.email, formData.password,);
+        await signup(formData.email, formData.password);
       }
-      navigate('/');
+      navigate("/");
     } catch (error) {
       // Error handling is done in the auth context
     } finally {
@@ -56,19 +54,18 @@ export default function Login() {
   };
 
   return (
-    <div 
+    <div
       className="min-h-screen flex items-center justify-center p-4 relative"
       style={{
         backgroundImage: `url(${cryptoBg})`,
-        backgroundSize: 'cover',
-        backgroundPosition: 'center',
-        backgroundRepeat: 'no-repeat'
+        backgroundSize: "cover",
+        backgroundPosition: "center",
+        backgroundRepeat: "no-repeat",
       }}
     >
       {/* Dark overlay for better text readability */}
       <div className="absolute inset-0 bg-background/80 backdrop-blur-sm"></div>
       <div className="w-full max-w-md space-y-6 relative z-10">
-    
         {/* Logo */}
         <div className="text-center space-y-2">
           <div className="mx-auto w-16 h-16 bg-primary rounded-2xl flex items-center justify-center">
@@ -76,7 +73,9 @@ export default function Login() {
           </div>
           <h1 className="text-2xl font-bold">Crypto AI Agent</h1>
           <p className="text-muted-foreground">
-            {isLogin ? 'Welcome back to your trading dashboard' : 'Join the future of crypto trading'}
+            {isLogin
+              ? "Welcome back to your trading dashboard"
+              : "Join the future of crypto trading"}
           </p>
         </div>
 
@@ -84,7 +83,7 @@ export default function Login() {
         <Card className="shadow-lg">
           <CardHeader>
             <CardTitle className="text-center">
-              {isLogin ? 'Sign In' : 'Create Account'}
+              {isLogin ? "Sign In" : "Create Account"}
             </CardTitle>
           </CardHeader>
           <CardContent className="space-y-4">
@@ -100,7 +99,12 @@ export default function Login() {
                     placeholder="Enter your email"
                     className="pl-10"
                     value={formData.email}
-                    onChange={(e) => setFormData(prev => ({ ...prev, email: e.target.value }))}
+                    onChange={(e) =>
+                      setFormData((prev) => ({
+                        ...prev,
+                        email: e.target.value,
+                      }))
+                    }
                     required
                   />
                 </div>
@@ -113,11 +117,16 @@ export default function Login() {
                   <Lock className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
                   <Input
                     id="password"
-                    type={showPassword ? 'text' : 'password'}
+                    type={showPassword ? "text" : "password"}
                     placeholder="Enter your password"
                     className="pl-10 pr-10"
                     value={formData.password}
-                    onChange={(e) => setFormData(prev => ({ ...prev, password: e.target.value }))}
+                    onChange={(e) =>
+                      setFormData((prev) => ({
+                        ...prev,
+                        password: e.target.value,
+                      }))
+                    }
                     required
                   />
                   <Button
@@ -127,7 +136,11 @@ export default function Login() {
                     className="absolute right-1 top-1 h-8 w-8 p-0"
                     onClick={() => setShowPassword(!showPassword)}
                   >
-                    {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+                    {showPassword ? (
+                      <EyeOff className="h-4 w-4" />
+                    ) : (
+                      <Eye className="h-4 w-4" />
+                    )}
                   </Button>
                 </div>
               </div>
@@ -140,22 +153,33 @@ export default function Login() {
                     <Lock className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
                     <Input
                       id="confirmPassword"
-                      type={showConfirmPassword ? 'text' : 'password'}
+                      type={showConfirmPassword ? "text" : "password"}
                       placeholder="Confirm your password"
                       className="pl-10 pr-10"
                       value={formData.confirmPassword}
-                      onChange={(e) => setFormData(prev => ({ ...prev, confirmPassword: e.target.value }))}
+                      onChange={(e) =>
+                        setFormData((prev) => ({
+                          ...prev,
+                          confirmPassword: e.target.value,
+                        }))
+                      }
                       required={!isLogin}
                     />
                     <Button
-                    type="button"
-                    variant="ghost"
-                    size="sm"
-                    className="absolute right-1 top-1 h-8 w-8 p-0"
-                    onClick={() => setShowConfirmPassword(!showConfirmPassword)}
-                  >
-                    {showConfirmPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
-                  </Button>
+                      type="button"
+                      variant="ghost"
+                      size="sm"
+                      className="absolute right-1 top-1 h-8 w-8 p-0"
+                      onClick={() =>
+                        setShowConfirmPassword(!showConfirmPassword)
+                      }
+                    >
+                      {showConfirmPassword ? (
+                        <EyeOff className="h-4 w-4" />
+                      ) : (
+                        <Eye className="h-4 w-4" />
+                      )}
+                    </Button>
                   </div>
                 </div>
               )}
@@ -165,10 +189,12 @@ export default function Login() {
                 {loading ? (
                   <>
                     <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                    {isLogin ? 'Signing In...' : 'Creating Account...'}
+                    {isLogin ? "Signing In..." : "Creating Account..."}
                   </>
+                ) : isLogin ? (
+                  "Sign In"
                 ) : (
-                  isLogin ? 'Sign In' : 'Create Account'
+                  "Create Account"
                 )}
               </Button>
             </form>
@@ -187,24 +213,26 @@ export default function Login() {
             {/* Toggle between Login/Signup */}
             <div className="text-center space-y-2">
               <p className="text-sm text-muted-foreground">
-                {isLogin ? "Don't have an account?" : "Already have an account?"}
+                {isLogin
+                  ? "Don't have an account?"
+                  : "Already have an account?"}
               </p>
               <Button
                 variant="outline"
                 onClick={() => setIsLogin(!isLogin)}
                 className="w-full"
               >
-                {isLogin ? 'Sign Up' : 'Sign In'}
+                {isLogin ? "Sign Up" : "Sign In"}
               </Button>
             </div>
           </CardContent>
-        </Card>      
+        </Card>
 
         {/* Security Notice */}
         <Alert>
           <AlertDescription className="text-center text-sm">
-            Your data is protected with enterprise-grade encryption. 
-            We never store your trading API keys or personal information.
+            Your data is protected with enterprise-grade encryption. We never
+            store your trading API keys or personal information.
           </AlertDescription>
         </Alert>
       </div>
