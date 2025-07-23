@@ -13,7 +13,7 @@ import { useTheme } from '@/contexts/ThemeContext';
 import { useAuth } from '@/contexts/AuthContext';
 import { Moon, Sun, Bell, RefreshCw, LogOut, User } from 'lucide-react';
 
-export function Navbar() {
+export function Navbar({ onRefresh, refreshing }: { onRefresh?: () => void; refreshing?: boolean }) {
   const { theme, toggleTheme } = useTheme();
   const { currentUser, logout } = useAuth();
   const location = useLocation();
@@ -35,9 +35,11 @@ export function Navbar() {
       <div className="container mx-auto px-6 h-16 flex items-center justify-between">
         {/* Logo */}
         <Link to="/" className="flex items-center space-x-2">
-          <div className="w-8 h-8 bg-primary rounded-lg flex items-center justify-center">
-            <span className="text-primary-foreground font-bold text-lg">CA</span>
-          </div>
+          <img
+            src="/logo.png"
+            alt="Crypto AI Agent Logo"
+            className="w-8 h-8 rounded-lg"
+          />
           <span className="font-bold text-xl">Crypto AI Agent</span>
         </Link>
 
@@ -84,8 +86,8 @@ export function Navbar() {
             )}
           </Button>
 
-          <Button variant="ghost" size="sm" className="w-9 h-9 p-0">
-            <RefreshCw className="h-4 w-4" />
+          <Button variant="ghost" size="sm" className="w-9 h-9 p-0" onClick={onRefresh} disabled={refreshing}>
+            {refreshing ? <RefreshCw className="h-4 w-4 animate-spin" /> : <RefreshCw className="h-4 w-4" />}
           </Button>
 
           <Button variant="ghost" size="sm" className="w-9 h-9 p-0 relative">

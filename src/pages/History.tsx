@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState, useCallback } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
@@ -19,98 +19,129 @@ import {
   PaginationPrevious 
 } from '@/components/ui/pagination';
 import { TrendingUp, TrendingDown, Filter } from 'lucide-react';
+import { getSignalHistory } from '@/lib/api';
 
 interface HistoricalSignal {
   id: string;
-  date: string;
-  pair: string;
-  direction: 'Long' | 'Short';
-  entry: string;
-  exit: string;
-  pnl: string;
-  pnlPercentage: string;
-  result: 'profit' | 'loss';
-  confidence: 'A+' | 'A' | 'B' | 'C';
+  asset: string;
+  gpt_signal?: {
+    confidence?: string; // e.g. "A", "A+", "B", "C"
+    entry?: number[]; // array of entry prices
+    stop_loss?: number[]; // array of stop loss prices
+    take_profits?: number[]; // array of take profit prices
+    reason?: string;
+  };
+  signal: 'Long' | 'Short';
+  status: 'waiting' | 'confirmed' | 'completed';
+  timestamp: string;
+  screenshots?: {
+    [key: string]: string;
+  };
+  result?: 'profit' | 'loss';
+  metrics?: Record<string, any>;
+  user_id?: string;
+  telegramId?: string;
+  // Optionally, add more fields as needed
+  // For legacy support:
+  pair?: string;
+  direction?: 'Long' | 'Short';
+  entry?: number | string;
+  exit?: number | string;
+  pnl?: number | string;
+  pnlPercentage?: string;
+  confidence?: string;
+  date?: string;
+  doc_id?: string;
 }
 
-const mockHistoricalSignals: HistoricalSignal[] = [
-  {
-    id: '1',
-    date: '2024-01-14',
-    pair: 'BTC/USDT',
-    direction: 'Long',
-    entry: '$66,800',
-    exit: '$68,200',
-    pnl: '+$420',
-    pnlPercentage: '+2.1%',
-    result: 'profit',
-    confidence: 'A+'
-  },
-  {
-    id: '2',
-    date: '2024-01-13',
-    pair: 'ETH/USDT',
-    direction: 'Short',
-    entry: '$3,920',
-    exit: '$3,850',
-    pnl: '+$210',
-    pnlPercentage: '+1.8%',
-    result: 'profit',
-    confidence: 'A'
-  },
-  {
-    id: '3',
-    date: '2024-01-12',
-    pair: 'SOL/USDT',
-    direction: 'Long',
-    entry: '$195.40',
-    exit: '$192.80',
-    pnl: '-$78',
-    pnlPercentage: '-1.3%',
-    result: 'loss',
-    confidence: 'B'
-  },
-  {
-    id: '4',
-    date: '2024-01-11',
-    pair: 'BTC/USDT',
-    direction: 'Short',
-    entry: '$67,500',
-    exit: '$65,900',
-    pnl: '+$480',
-    pnlPercentage: '+2.4%',
-    result: 'profit',
-    confidence: 'A+'
-  },
-  {
-    id: '5',
-    date: '2024-01-10',
-    pair: 'ETH/USDT',
-    direction: 'Long',
-    entry: '$3,780',
-    exit: '$3,920',
-    pnl: '+$350',
-    pnlPercentage: '+3.7%',
-    result: 'profit',
-    confidence: 'A'
-  }
-];
-
 export default function History() {
+  const [signals, setSignals] = useState<HistoricalSignal[]>([]);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 10;
 
-  const totalPages = Math.ceil(mockHistoricalSignals.length / itemsPerPage);
+  const fetchHistory = useCallback(async () => {
+    setLoading(true);
+    setError(null);
+    try {
+      const data = await getSignalHistory();
+      // Ensure all signals conform to HistoricalSignal type
+      setSignals(data as HistoricalSignal[]);
+    } catch (e: any) {
+      setError(e.message || 'Failed to fetch history');
+    } finally {
+      setLoading(false);
+    }
+  }, []);
+
+  useEffect(() => {
+    fetchHistory();
+  }, [fetchHistory]);
+
+  const totalPages = Math.ceil(signals.length / itemsPerPage);
   const startIndex = (currentPage - 1) * itemsPerPage;
   const endIndex = startIndex + itemsPerPage;
-  const currentSignals = mockHistoricalSignals.slice(startIndex, endIndex);
+  const currentSignals = signals.slice(startIndex, endIndex);
 
-  const totalPnL = mockHistoricalSignals.reduce((sum, signal) => {
-    const pnl = parseFloat(signal.pnl.replace(/[+$]/g, ''));
-    return sum + pnl;
+  // Helper to get confidence from gpt_signal or fallback
+  const getConfidence = (signal: HistoricalSignal) => {
+    return signal.gpt_signal?.confidence ?? signal.confidence ?? '-';
+  };
+
+  // Helper to get entry/exit from gpt_signal or fallback
+  const getEntry = (signal: HistoricalSignal) => {
+    if (signal.gpt_signal?.entry && Array.isArray(signal.gpt_signal.entry) && signal.gpt_signal.entry.length > 0) {
+      return signal.gpt_signal.entry.join(', ');
+    }
+    return signal.entry ?? '-';
+  };
+  const getExit = (signal: HistoricalSignal) => {
+    // No exit in gpt_signal, fallback to signal.exit
+    return signal.exit ?? '-';
+  };
+
+  // Helper to get direction from top-level or fallback to signal.signal
+  const getDirection = (signal: HistoricalSignal) => {
+    return signal.direction ?? signal.signal;
+  };
+
+  // Helper to get pair/asset
+  const getPair = (signal: HistoricalSignal) => {
+    return signal.pair ?? signal.asset;
+  };
+
+  // Helper to get PnL
+  const getPnL = (signal: HistoricalSignal) => {
+    return signal.pnl ?? '-';
+  };
+
+  // Helper to get PnL Percentage
+  const getPnLPercentage = (signal: HistoricalSignal) => {
+    return signal.pnlPercentage ?? '';
+  };
+
+  // Helper to get result
+  const getResult = (signal: HistoricalSignal) => {
+    return signal.result ?? '-';
+  };
+
+  // Helper to get date
+  const getDate = (signal: HistoricalSignal) => {
+    if (signal.date) return new Date(signal.date).toLocaleDateString();
+    if (signal.timestamp) return new Date(signal.timestamp).toLocaleDateString();
+    return '-';
+  };
+
+  // Calculate total PnL
+  const totalPnL = signals.reduce((sum, signal) => {
+    const pnlRaw = getPnL(signal);
+    const pnl = typeof pnlRaw === 'number' ? pnlRaw : parseFloat((pnlRaw || '0').toString().replace(/[+$]/g, ''));
+    return sum + (isNaN(pnl) ? 0 : pnl);
   }, 0);
 
-  const winRate = (mockHistoricalSignals.filter(s => s.result === 'profit').length / mockHistoricalSignals.length) * 100;
+  // Calculate win rate
+  const winRate = signals.length > 0 ? (signals.filter(s => getResult(s) === 'profit').length / signals.length) * 100 : 0;
 
   return (
     <div className="container mx-auto p-6 space-y-6">
@@ -121,7 +152,6 @@ export default function History() {
           <span>Filter</span>
         </Button>
       </div>
-
       {/* Summary Stats */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
         <Card>
@@ -143,86 +173,93 @@ export default function History() {
         <Card>
           <CardContent className="p-6">
             <div className="text-center">
-              <div className="text-2xl font-bold">{mockHistoricalSignals.length}</div>
+              <div className="text-2xl font-bold">{signals.length}</div>
               <div className="text-sm text-muted-foreground">Total Trades</div>
             </div>
           </CardContent>
         </Card>
       </div>
-
       {/* History Table */}
       <Card>
         <CardHeader>
           <CardTitle>Recent Trades</CardTitle>
         </CardHeader>
         <CardContent>
-          <Table>
-            <TableHeader>
-              <TableRow>
-                <TableHead>Date</TableHead>
-                <TableHead>Pair</TableHead>
-                <TableHead>Direction</TableHead>
-                <TableHead>Entry</TableHead>
-                <TableHead>Exit</TableHead>
-                <TableHead>P&L</TableHead>
-                <TableHead>Confidence</TableHead>
-                <TableHead>Result</TableHead>
-              </TableRow>
-            </TableHeader>
-            <TableBody>
-              {currentSignals.map((signal) => (
-                <TableRow key={signal.id}>
-                  <TableCell className="font-mono text-sm">
-                    {new Date(signal.date).toLocaleDateString()}
-                  </TableCell>
-                  <TableCell className="font-medium">{signal.pair}</TableCell>
-                  <TableCell>
-                    <div className="flex items-center space-x-1">
-                      {signal.direction === 'Long' ? (
-                        <TrendingUp className="h-4 w-4 text-success" />
-                      ) : (
-                        <TrendingDown className="h-4 w-4 text-destructive" />
-                      )}
-                      <span className={signal.direction === 'Long' ? 'text-success' : 'text-destructive'}>
-                        {signal.direction}
-                      </span>
-                    </div>
-                  </TableCell>
-                  <TableCell className="font-mono">{signal.entry}</TableCell>
-                  <TableCell className="font-mono">{signal.exit}</TableCell>
-                  <TableCell>
-                    <div className="text-right">
-                      <div className={`font-mono ${signal.result === 'profit' ? 'text-success' : 'text-destructive'}`}>
-                        {signal.pnl}
-                      </div>
-                      <div className={`text-xs ${signal.result === 'profit' ? 'text-success' : 'text-destructive'}`}>
-                        {signal.pnlPercentage}
-                      </div>
-                    </div>
-                  </TableCell>
-                  <TableCell>
-                    <Badge 
-                      className={
-                        signal.confidence === 'A+' || signal.confidence === 'A' 
-                          ? 'bg-success' 
-                          : signal.confidence === 'B' 
-                          ? 'bg-warning' 
-                          : 'bg-destructive'
-                      }
-                    >
-                      {signal.confidence}
-                    </Badge>
-                  </TableCell>
-                  <TableCell>
-                    <Badge variant={signal.result === 'profit' ? 'default' : 'destructive'}>
-                      {signal.result === 'profit' ? 'Profit' : 'Loss'}
-                    </Badge>
-                  </TableCell>
+          {loading && <div>Loading history...</div>}
+          {error && <div className="text-red-500">{error}</div>}
+          {!loading && !error && (
+            <Table>
+              <TableHeader>
+                <TableRow>
+                  <TableHead>Date</TableHead>
+                  <TableHead>Pair</TableHead>
+                  <TableHead>Direction</TableHead>
+                  <TableHead>Entry</TableHead>
+                  <TableHead>Exit</TableHead>
+                  <TableHead>P&L</TableHead>
+                  <TableHead>Confidence</TableHead>
+                  <TableHead>Result</TableHead>
                 </TableRow>
-              ))}
-            </TableBody>
-          </Table>
-
+              </TableHeader>
+              <TableBody>
+                {currentSignals.map((signal) => {
+                  const direction = getDirection(signal);
+                  const result = getResult(signal);
+                  const confidence = getConfidence(signal);
+                  return (
+                    <TableRow key={signal.id || signal.doc_id}>
+                      <TableCell className="font-mono text-sm">
+                        {getDate(signal)}
+                      </TableCell>
+                      <TableCell className="font-medium">{getPair(signal)}</TableCell>
+                      <TableCell>
+                        <div className="flex items-center space-x-1">
+                          {direction === 'Long' ? (
+                            <TrendingUp className="h-4 w-4 text-success" />
+                          ) : (
+                            <TrendingDown className="h-4 w-4 text-destructive" />
+                          )}
+                          <span className={direction === 'Long' ? 'text-success' : 'text-destructive'}>
+                            {direction}
+                          </span>
+                        </div>
+                      </TableCell>
+                      <TableCell className="font-mono">{getEntry(signal)}</TableCell>
+                      <TableCell className="font-mono">{getExit(signal)}</TableCell>
+                      <TableCell>
+                        <div className="text-right">
+                          <div className={`font-mono ${result === 'profit' ? 'text-success' : 'text-destructive'}`}>
+                            {getPnL(signal)}
+                          </div>
+                          <div className={`text-xs ${result === 'profit' ? 'text-success' : 'text-destructive'}`}>
+                            {getPnLPercentage(signal)}
+                          </div>
+                        </div>
+                      </TableCell>
+                      <TableCell>
+                        <Badge 
+                          className={
+                            confidence === 'A+' || confidence === 'A' 
+                              ? 'bg-success' 
+                              : confidence === 'B' 
+                              ? 'bg-warning' 
+                              : 'bg-destructive'
+                          }
+                        >
+                          {confidence}
+                        </Badge>
+                      </TableCell>
+                      <TableCell>
+                        <Badge variant={result === 'profit' ? 'default' : 'destructive'}>
+                          {result === 'profit' ? 'Profit' : result === 'loss' ? 'Loss' : '-'}
+                        </Badge>
+                      </TableCell>
+                    </TableRow>
+                  );
+                })}
+              </TableBody>
+            </Table>
+          )}
           {/* Pagination */}
           <div className="mt-6">
             <Pagination>

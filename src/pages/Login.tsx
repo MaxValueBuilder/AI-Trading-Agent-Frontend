@@ -24,20 +24,6 @@ export default function Login() {
 
   const { login, signup, currentUser } = useAuth();
   const navigate = useNavigate();
-  const [searchParams] = useSearchParams();
-  const token = searchParams.get('token');
-  let telegramId: string | undefined = undefined;
-  let coin: string | undefined = undefined;
-
-  if (token) {
-    try {
-      const decoded: any = jwtDecode(token);
-      telegramId = decoded.telegram_id;
-      coin = decoded.coin;
-    } catch (e) {
-      // handle invalid token
-    }
-  }
 
   useEffect(() => {
     if (currentUser) {
@@ -52,15 +38,13 @@ export default function Login() {
       return;
     }
 
-    console.log("This is telegram id    ------->", telegramId);
-
     setLoading(true);
     try {
       if (isLogin) {
         
         await login(formData.email, formData.password);
       } else {
-        await signup(formData.email, formData.password, telegramId || undefined);
+        await signup(formData.email, formData.password,);
       }
       navigate('/');
     } catch (error) {
@@ -204,16 +188,7 @@ export default function Login() {
               </Button>
             </div>
           </CardContent>
-        </Card>
-
-        {/* Telegram Notice */}
-        {telegramId && (
-          <Alert>
-            <AlertDescription className="text-center text-sm">
-              Your Telegram account will be linked to this account for notifications.
-            </AlertDescription>
-          </Alert>
-        )}
+        </Card>      
 
         {/* Security Notice */}
         <Alert>

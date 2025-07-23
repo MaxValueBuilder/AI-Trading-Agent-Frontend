@@ -6,14 +6,26 @@ import {
   createUserWithEmailAndPassword, 
   signOut 
 } from 'firebase/auth';
-import { doc, setDoc, getDoc } from 'firebase/firestore';
+import { doc, setDoc, getDoc, updateDoc } from 'firebase/firestore';
 import { auth, db } from '@/lib/firebase';
 import { useToast } from '@/hooks/use-toast';
+
+function getTelegramIdFromUrl() {
+  const params = new URLSearchParams(window.location.search);
+  if (params.has('telegramId')) return params.get('telegramId');
+  if (params.has('token')) {
+    try {
+      const payload = JSON.parse(atob(params.get('token').split('.')[1]));
+      if (payload.telegramId) return payload.telegramId.toString();
+    } catch {}
+  }
+  return null;
+}
 
 interface AuthContextType {
   currentUser: User | null;
   login: (email: string, password: string) => Promise<void>;
-  signup: (email: string, password: string, telegramId?: string) => Promise<void>;
+  signup: (email: string, password: string) => Promise<void>;
   logout: () => Promise<void>;
   loading: boolean;
 }
@@ -29,28 +41,42 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [loading, setLoading] = useState(true);
   const { toast } = useToast();
 
-  async function signup(email: string, password: string, telegramId?: string) {
+  // Extract telegramId from URL on first load
+  const telegramId = getTelegramIdFromUrl();
+
+  async function linkTelegramIdToUser(uid: string, telegramId: string) {
+    if (!telegramId) return;
+    const userRef = doc(db, 'users', uid);
+    const userSnap = await getDoc(userRef);
+    if (userSnap.exists()) {
+      const userData = userSnap.data();
+      if (!userData.telegramId || userData.telegramId !== telegramId) {
+        await updateDoc(userRef, { telegramId });
+      }
+    } else {
+      await setDoc(userRef, { telegramId }, { merge: true });
+    }
+  }
+
+  async function signup(email: string, password: string) {
     try {
-      console.log("--------->", email, telegramId);
       const result = await createUserWithEmailAndPassword(auth, email, password);
-      console.log("---------> email and telegram Id", email, telegramId);
-      
       // Save user data to Firestore
       await setDoc(doc(db, 'users', result.user.uid), {
         email: result.user.email,
         uid: result.user.uid,
         createdAt: new Date().toISOString(),
-        ...(telegramId && { telegramId })
+        ...(telegramId ? { telegramId } : {})
       });
-
-      console.log("====================>")
-
       // Store in localStorage
       localStorage.setItem('user', JSON.stringify({
         uid: result.user.uid,
         email: result.user.email
       }));
-
+      // Link telegramId if present
+      if (telegramId) {
+        await linkTelegramIdToUser(result.user.uid, telegramId);
+      }
       toast({
         title: "Account created successfully",
         description: "Welcome to Crypto AI Agent!"
@@ -68,13 +94,15 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   async function login(email: string, password: string) {
     try {
       const result = await signInWithEmailAndPassword(auth, email, password);
-      
       // Store in localStorage
       localStorage.setItem('user', JSON.stringify({
         uid: result.user.uid,
         email: result.user.email
       }));
-
+      // On login, update telegramId if present and changed
+      if (telegramId) {
+        await linkTelegramIdToUser(result.user.uid, telegramId);
+      }
       toast({
         title: "Welcome back!",
         description: "Successfully signed in."
@@ -111,10 +139,13 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     const unsubscribe = onAuthStateChanged(auth, (user) => {
       setCurrentUser(user);
       setLoading(false);
+      // On login, if telegramId is present, link it
+      if (user && telegramId) {
+        linkTelegramIdToUser(user.uid, telegramId);
+      }
     });
-
     return unsubscribe;
-  }, []);
+  }, [telegramId]);
 
   const value = {
     currentUser,

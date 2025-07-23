@@ -16,9 +16,12 @@ const coins: Coin[] = [
   { symbol: 'SOL', name: 'Solana', price: '$198.42', change: '-0.92%', isPositive: false },
 ];
 
-export function CoinSelector() {
-  const [selectedCoin, setSelectedCoin] = useState('BTC');
+interface CoinSelectorProps {
+  selectedCoin: string;
+  onSelect: (coin: string) => void;
+}
 
+export function CoinSelector({ selectedCoin, onSelect }: CoinSelectorProps) {
   return (
     <div className="space-y-4">
       <h2 className="text-lg font-semibold">Select Trading Pair</h2>
@@ -28,7 +31,7 @@ export function CoinSelector() {
             key={coin.symbol}
             variant={selectedCoin === coin.symbol ? "default" : "outline"}
             className="p-4 h-auto flex flex-col items-start space-y-2"
-            onClick={() => setSelectedCoin(coin.symbol)}
+            onClick={() => onSelect(coin.symbol)}
           >
             <div className="flex items-center justify-between w-full">
               <span className="font-bold text-lg">{coin.symbol}</span>
