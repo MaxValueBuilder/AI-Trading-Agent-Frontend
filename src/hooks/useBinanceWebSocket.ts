@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef, useCallback } from 'react';
-import { CoinPriceData } from '@/lib/api';
+import { CoinPriceData, getCoinName } from '@/lib/api';
 
 interface WebSocketTicker {
   e: string; // Event type
@@ -145,32 +145,4 @@ export function useBinanceWebSocket(symbols: string[]) {
     reconnect: connect,
     disconnect,
   };
-}
-
-// Get coin name mapping
-function getCoinName(symbol: string): string {
-  const coinNames: { [key: string]: string } = {
-    'BTC': 'Bitcoin',
-    'ETH': 'Ethereum',
-    'SOL': 'Solana',
-    'ADA': 'Cardano',
-    'DOT': 'Polkadot',
-    'LINK': 'Chainlink',
-    'UNI': 'Uniswap',
-    'MATIC': 'Polygon',
-    'AVAX': 'Avalanche',
-    'ATOM': 'Cosmos',
-    'LTC': 'Litecoin',
-    'BCH': 'Bitcoin Cash',
-    'XRP': 'Ripple',
-    'DOGE': 'Dogecoin',
-    'SHIB': 'Shiba Inu',
-    'TRX': 'TRON',
-    'NEAR': 'NEAR Protocol',
-    'FTM': 'Fantom',
-    'ALGO': 'Algorand',
-    'VET': 'VeChain',
-  };
-  
-  return coinNames[symbol] || symbol;
 } 

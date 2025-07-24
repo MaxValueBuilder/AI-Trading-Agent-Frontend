@@ -1,11 +1,11 @@
-# Real-Time Cryptocurrency Prices
+# Real-Time Cryptocurrency Prices (WebSocket Only)
 
-This implementation provides real-time cryptocurrency price data using the Binance API. It supports both REST API polling and WebSocket connections for live updates.
+This implementation provides real-time cryptocurrency price data using the Binance WebSocket API for instant updates.
 
 ## Features
 
-- **Real-time price updates** from Binance API
-- **Dual mode support**: REST API polling (5-second intervals) and WebSocket (instant updates)
+- **Real-time price updates** from Binance WebSocket API
+- **Instant updates** via WebSocket connection (no polling)
 - **Automatic reconnection** for WebSocket connections
 - **Error handling** with retry mechanisms
 - **Loading states** with skeleton components
@@ -43,30 +43,6 @@ import { PriceTicker, MiniPriceTicker } from '@/components/Dashboard/PriceTicker
 
 ## Hooks
 
-### useRealTimePrices
-
-Fetch real-time prices for multiple coins using REST API.
-
-```tsx
-import { useRealTimePrices } from "@/hooks/useRealTimePrices";
-
-const { data, isLoading, error, refetch } = useRealTimePrices([
-  "BTC",
-  "ETH",
-  "SOL",
-]);
-```
-
-### useSingleCoinPrice
-
-Fetch real-time price for a single coin.
-
-```tsx
-import { useSingleCoinPrice } from "@/hooks/useRealTimePrices";
-
-const { data, isLoading, error } = useSingleCoinPrice("BTC");
-```
-
 ### useBinanceWebSocket
 
 Real-time price updates via WebSocket connection.
@@ -84,7 +60,7 @@ const { prices, isConnected, error, reconnect } = useBinanceWebSocket([
 
 ### getRealTimePrices
 
-Fetch real-time prices for specific symbols.
+Fetch real-time prices for specific symbols (fallback method).
 
 ```tsx
 import { getRealTimePrices } from "@/lib/api";
@@ -207,13 +183,13 @@ function PriceDashboard() {
 ### Custom Hook Usage
 
 ```tsx
-import { useRealTimePrices } from "@/hooks/useRealTimePrices";
+import { useBinanceWebSocket } from "@/hooks/useBinanceWebSocket";
 
 function CustomComponent() {
-  const { data: prices, isLoading, error } = useRealTimePrices(["BTC", "ETH"]);
+  const { prices, isConnected, error } = useBinanceWebSocket(["BTC", "ETH"]);
 
-  if (isLoading) return <div>Loading...</div>;
-  if (error) return <div>Error: {error.message}</div>;
+  if (!isConnected) return <div>Connecting...</div>;
+  if (error) return <div>Error: {error}</div>;
 
   return (
     <div>
@@ -231,23 +207,23 @@ function CustomComponent() {
 
 The implementation includes comprehensive error handling:
 
-- **Network errors**: Automatic retry with exponential backoff
-- **API rate limits**: Built-in rate limiting and retry logic
-- **WebSocket disconnections**: Automatic reconnection
+- **Network errors**: Automatic reconnection with exponential backoff
+- **WebSocket disconnections**: Automatic reconnection every 5 seconds
 - **Invalid data**: Graceful fallbacks and error states
+- **Connection timeouts**: Built-in timeout handling
 
 ## Performance Considerations
 
-- **Caching**: React Query provides intelligent caching
-- **Background updates**: Data updates even when tab is not active
+- **Real-time updates**: Instant price updates via WebSocket
 - **Efficient re-renders**: Only updates when data actually changes
 - **Connection pooling**: WebSocket connections are reused efficiently
+- **Background updates**: Data updates even when tab is not active
 
 ## Security
 
-- **No API keys required**: Uses public Binance API endpoints
-- **Rate limiting**: Built-in protection against excessive requests
+- **No API keys required**: Uses public Binance WebSocket endpoints
 - **Data validation**: All incoming data is validated and sanitized
+- **Secure WebSocket**: Uses WSS (WebSocket Secure) protocol
 
 ## Troubleshooting
 
@@ -255,8 +231,8 @@ The implementation includes comprehensive error handling:
 
 1. **No data loading**: Check network connection and Binance API status
 2. **WebSocket not connecting**: Verify firewall settings and network connectivity
-3. **Stale data**: Ensure React Query is properly configured
-4. **High CPU usage**: Reduce update frequency or switch to REST API mode
+3. **Connection drops**: WebSocket automatically reconnects every 5 seconds
+4. **High CPU usage**: WebSocket is more efficient than polling
 
 ### Debug Mode
 
@@ -266,6 +242,14 @@ Enable React Query DevTools for debugging:
 // Already included in main.tsx
 <ReactQueryDevtools initialIsOpen={false} />
 ```
+
+## WebSocket Advantages
+
+- **Real-time updates**: Instant price changes without polling delays
+- **Lower latency**: Direct connection to Binance servers
+- **Reduced server load**: No need for frequent HTTP requests
+- **Better performance**: More efficient than REST API polling
+- **Automatic reconnection**: Handles network interruptions gracefully
 
 ## Future Enhancements
 

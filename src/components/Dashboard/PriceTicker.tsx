@@ -1,5 +1,5 @@
 import React from 'react';
-import { useSingleCoinPrice } from '@/hooks/useRealTimePrices';
+import { useBinanceWebSocket } from '@/hooks/useBinanceWebSocket';
 import { Badge } from '@/components/ui/badge';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Skeleton } from '@/components/ui/skeleton';
@@ -11,9 +11,10 @@ interface PriceTickerProps {
 }
 
 export function PriceTicker({ symbol, showDetails = false }: PriceTickerProps) {
-  const { data: coin, isLoading, error } = useSingleCoinPrice(symbol);
+  const { prices, isConnected, error } = useBinanceWebSocket([symbol]);
+  const coin = prices.find(p => p.symbol === symbol);
 
-  if (isLoading) {
+  if (!isConnected) {
     return (
       <Card className="w-full">
         <CardHeader className="pb-2">
@@ -82,9 +83,10 @@ export function PriceTicker({ symbol, showDetails = false }: PriceTickerProps) {
 
 // Mini version for compact display
 export function MiniPriceTicker({ symbol }: PriceTickerProps) {
-  const { data: coin, isLoading } = useSingleCoinPrice(symbol);
+  const { prices, isConnected } = useBinanceWebSocket([symbol]);
+  const coin = prices.find(p => p.symbol === symbol);
 
-  if (isLoading || !coin) {
+  if (!isConnected || !coin) {
     return (
       <div className="flex items-center space-x-2 p-2 border rounded">
         <Skeleton className="h-4 w-8" />
