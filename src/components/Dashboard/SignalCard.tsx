@@ -23,7 +23,7 @@ interface Signal {
   };
   result?: 'profit' | 'loss';
   metrics?: Record<string, any>;
-  user_id?: string;
+  userId?: string;
   telegramId?: string;
 }
 

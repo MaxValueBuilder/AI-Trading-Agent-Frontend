@@ -39,7 +39,7 @@ interface HistoricalSignal {
   };
   result?: 'profit' | 'loss';
   metrics?: Record<string, any>;
-  user_id?: string;
+  userId?: string;
   telegramId?: string;
   // Optionally, add more fields as needed
   // For legacy support:
