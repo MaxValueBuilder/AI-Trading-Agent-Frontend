@@ -40,7 +40,7 @@ export default function Dashboard({ registerRefresh }: DashboardProps) {
   const [showConfirmDialog, setShowConfirmDialog] = useState(false);
   const [pendingCoin, setPendingCoin] = useState<string | null>(null);
   const [isAnalyzing, setIsAnalyzing] = useState(() => {
-    // Initialize from localStorage or check if there are analyzing signals
+    // Initialize from localStorage, but we'll verify this with actual data
     const stored = localStorage.getItem('isAnalyzing');
     return stored === 'true';
   });
@@ -54,12 +54,10 @@ export default function Dashboard({ registerRefresh }: DashboardProps) {
       const data = await getCurrentSignals();
       setSignals(data);
       
-      // Check if there are any analyzing signals and update state accordingly
+      // Always check if there are any analyzing signals and update state accordingly
       const hasAnalyzingSignal = data.some((signal: any) => signal.status === 'analyzing');
-      if (hasAnalyzingSignal !== isAnalyzing) {
-        setIsAnalyzing(hasAnalyzingSignal);
-        localStorage.setItem('isAnalyzing', hasAnalyzingSignal.toString());
-      }
+      setIsAnalyzing(hasAnalyzingSignal);
+      localStorage.setItem('isAnalyzing', hasAnalyzingSignal.toString());
     } catch (e: any) {
       setError(e.message || 'Failed to fetch signals');
     } finally {
@@ -67,7 +65,7 @@ export default function Dashboard({ registerRefresh }: DashboardProps) {
         setLoading(false);
       }
     }
-  }, [isAnalyzing]);
+  }, []);
 
   // Update localStorage when isAnalyzing changes
   useEffect(() => {
@@ -87,6 +85,13 @@ export default function Dashboard({ registerRefresh }: DashboardProps) {
     return () => window.removeEventListener('storage', handleStorageChange);
   }, [isAnalyzing]);
 
+  // Cleanup localStorage when there are no analyzing signals
+  useEffect(() => {
+    if (!isAnalyzing) {
+      localStorage.removeItem('isAnalyzing');
+    }
+  }, [isAnalyzing]);
+
   const handleRefresh = async () => {
     setRefreshing(true);
     await fetchSignals();
@@ -102,25 +107,11 @@ export default function Dashboard({ registerRefresh }: DashboardProps) {
 
   useEffect(() => {
     fetchSignals();
-    
-    // Cleanup function to clear localStorage if no analyzing signals when component unmounts
-    return () => {
-      const hasAnalyzingSignal = signals.some(signal => signal.status === 'analyzing');
-      if (!hasAnalyzingSignal) {
-        localStorage.removeItem('isAnalyzing');
-      }
-    };
-  }, [fetchSignals, signals]);
+  }, [fetchSignals]);
 
   // Auto-refresh when there's an analyzing signal
   useEffect(() => {
     const hasAnalyzingSignal = signals.some(signal => signal.status === 'analyzing');
-    
-    // Update analyzing state based on current signals
-    if (hasAnalyzingSignal !== isAnalyzing) {
-      setIsAnalyzing(hasAnalyzingSignal);
-      localStorage.setItem('isAnalyzing', hasAnalyzingSignal.toString());
-    }
     
     if (hasAnalyzingSignal) {
       const interval = setInterval(() => {
@@ -129,7 +120,7 @@ export default function Dashboard({ registerRefresh }: DashboardProps) {
       
       return () => clearInterval(interval);
     }
-  }, [signals, fetchSignals, isAnalyzing]);
+  }, [signals, fetchSignals]);
 
   const handleViewScreenshot = (screenshotUrl: string, screenshotType: string) => {
     setSelectedScreenshot({ url: screenshotUrl, type: screenshotType });
