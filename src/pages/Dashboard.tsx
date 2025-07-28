@@ -39,7 +39,11 @@ export default function Dashboard({ registerRefresh }: DashboardProps) {
   const [selectedCoin, setSelectedCoin] = useState('BTC');
   const [showConfirmDialog, setShowConfirmDialog] = useState(false);
   const [pendingCoin, setPendingCoin] = useState<string | null>(null);
-  const [isAnalyzing, setIsAnalyzing] = useState(false);
+  const [isAnalyzing, setIsAnalyzing] = useState(() => {
+    // Initialize from localStorage or check if there are analyzing signals
+    const stored = localStorage.getItem('isAnalyzing');
+    return stored === 'true';
+  });
 
   const fetchSignals = useCallback(async (showLoading = true) => {
     if (showLoading) {
@@ -49,6 +53,13 @@ export default function Dashboard({ registerRefresh }: DashboardProps) {
     try {
       const data = await getCurrentSignals();
       setSignals(data);
+      
+      // Check if there are any analyzing signals and update state accordingly
+      const hasAnalyzingSignal = data.some((signal: any) => signal.status === 'analyzing');
+      if (hasAnalyzingSignal !== isAnalyzing) {
+        setIsAnalyzing(hasAnalyzingSignal);
+        localStorage.setItem('isAnalyzing', hasAnalyzingSignal.toString());
+      }
     } catch (e: any) {
       setError(e.message || 'Failed to fetch signals');
     } finally {
@@ -56,7 +67,25 @@ export default function Dashboard({ registerRefresh }: DashboardProps) {
         setLoading(false);
       }
     }
-  }, []);
+  }, [isAnalyzing]);
+
+  // Update localStorage when isAnalyzing changes
+  useEffect(() => {
+    localStorage.setItem('isAnalyzing', isAnalyzing.toString());
+    
+    // Listen for storage changes (in case user has multiple tabs)
+    const handleStorageChange = (e: StorageEvent) => {
+      if (e.key === 'isAnalyzing') {
+        const newValue = e.newValue === 'true';
+        if (newValue !== isAnalyzing) {
+          setIsAnalyzing(newValue);
+        }
+      }
+    };
+    
+    window.addEventListener('storage', handleStorageChange);
+    return () => window.removeEventListener('storage', handleStorageChange);
+  }, [isAnalyzing]);
 
   const handleRefresh = async () => {
     setRefreshing(true);
@@ -73,11 +102,25 @@ export default function Dashboard({ registerRefresh }: DashboardProps) {
 
   useEffect(() => {
     fetchSignals();
-  }, [fetchSignals]);
+    
+    // Cleanup function to clear localStorage if no analyzing signals when component unmounts
+    return () => {
+      const hasAnalyzingSignal = signals.some(signal => signal.status === 'analyzing');
+      if (!hasAnalyzingSignal) {
+        localStorage.removeItem('isAnalyzing');
+      }
+    };
+  }, [fetchSignals, signals]);
 
   // Auto-refresh when there's an analyzing signal
   useEffect(() => {
     const hasAnalyzingSignal = signals.some(signal => signal.status === 'analyzing');
+    
+    // Update analyzing state based on current signals
+    if (hasAnalyzingSignal !== isAnalyzing) {
+      setIsAnalyzing(hasAnalyzingSignal);
+      localStorage.setItem('isAnalyzing', hasAnalyzingSignal.toString());
+    }
     
     if (hasAnalyzingSignal) {
       const interval = setInterval(() => {
@@ -86,7 +129,7 @@ export default function Dashboard({ registerRefresh }: DashboardProps) {
       
       return () => clearInterval(interval);
     }
-  }, [signals, fetchSignals]);
+  }, [signals, fetchSignals, isAnalyzing]);
 
   const handleViewScreenshot = (screenshotUrl: string, screenshotType: string) => {
     setSelectedScreenshot({ url: screenshotUrl, type: screenshotType });
@@ -104,6 +147,7 @@ export default function Dashboard({ registerRefresh }: DashboardProps) {
     setTriggeringCoin(pendingCoin);
     setShowConfirmDialog(false);
     setIsAnalyzing(true);
+    localStorage.setItem('isAnalyzing', 'true');
     
     // Create an immediate analyzing signal
     const analyzingSignal = {
@@ -130,10 +174,14 @@ export default function Dashboard({ registerRefresh }: DashboardProps) {
       setError(e.message || 'Failed to trigger signal');
       // Remove the analyzing signal on error
       setSignals(prev => prev.filter(s => s.id !== analyzingSignal.id));
+      // Reset analyzing state on error
+      setIsAnalyzing(false);
+      localStorage.setItem('isAnalyzing', 'false');
     } finally {
       setTriggeringCoin(null);
       setPendingCoin(null);
-      setIsAnalyzing(false);
+      // Note: We don't set isAnalyzing to false here anymore
+      // It will be updated by the polling mechanism when the signal status changes
     }
   };
 
