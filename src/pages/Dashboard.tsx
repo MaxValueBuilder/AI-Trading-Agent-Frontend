@@ -44,6 +44,8 @@ export default function Dashboard({ registerRefresh }: DashboardProps) {
     const stored = localStorage.getItem('isAnalyzing');
     return stored === 'true';
   });
+  const [pollingErrorCount, setPollingErrorCount] = useState(0);
+  const [showPollingErrorAlert, setShowPollingErrorAlert] = useState(false);
 
   const fetchSignals = useCallback(async (showLoading = true) => {
     if (showLoading) {
@@ -58,14 +60,34 @@ export default function Dashboard({ registerRefresh }: DashboardProps) {
       const hasAnalyzingSignal = data.some((signal: any) => signal.status === 'analyzing');
       setIsAnalyzing(hasAnalyzingSignal);
       localStorage.setItem('isAnalyzing', hasAnalyzingSignal.toString());
+      
+      // Reset error count on successful fetch
+      if (showLoading) {
+        setPollingErrorCount(0);
+      }
     } catch (e: any) {
       setError(e.message || 'Failed to fetch signals');
+      
+      // Increment error count for polling errors
+      if (!showLoading) {
+        const newErrorCount = pollingErrorCount + 1;
+        setPollingErrorCount(newErrorCount);
+        
+        // If we've had 20 polling errors, remove analyzing signals and show alert
+        if (newErrorCount >= 20) {
+          setSignals(prev => prev.filter(signal => signal.status !== 'analyzing'));
+          setIsAnalyzing(false);
+          localStorage.setItem('isAnalyzing', 'false');
+          setShowPollingErrorAlert(true);
+          setPollingErrorCount(0);
+        }
+      }
     } finally {
       if (showLoading) {
         setLoading(false);
       }
     }
-  }, []);
+  }, [pollingErrorCount]);
 
   // Update localStorage when isAnalyzing changes
   useEffect(() => {
@@ -139,6 +161,7 @@ export default function Dashboard({ registerRefresh }: DashboardProps) {
     setShowConfirmDialog(false);
     setIsAnalyzing(true);
     localStorage.setItem('isAnalyzing', 'true');
+    setPollingErrorCount(0); // Reset error count for new analysis
     
     // Create an immediate analyzing signal
     const analyzingSignal = {
@@ -208,6 +231,24 @@ export default function Dashboard({ registerRefresh }: DashboardProps) {
     <div className="container mx-auto p-6 space-y-6">
       {/* Optionally, if Navbar is used here: */}
       {/* <Navbar onRefresh={handleRefresh} refreshing={refreshing} /> */}
+      {/* Polling Error Alert */}
+      {showPollingErrorAlert && (
+        <Alert className="border-destructive bg-destructive/10">
+          <AlertTriangle className="h-4 w-4" />
+          <AlertDescription>
+            <strong>Connection Error:</strong> Unable to update signal status after multiple attempts. The analyzing signal has been removed. Please try generating a new signal.
+            <Button 
+              variant="outline" 
+              size="sm" 
+              className="ml-2"
+              onClick={() => setShowPollingErrorAlert(false)}
+            >
+              Dismiss
+            </Button>
+          </AlertDescription>
+        </Alert>
+      )}
+
       {/* Alert Banner */}
       <Alert>
         <AlertTriangle className="h-4 w-4" />
@@ -240,9 +281,16 @@ export default function Dashboard({ registerRefresh }: DashboardProps) {
       <div className="space-y-4">
         <div className="flex items-center justify-between">
           <h2 className="text-xl font-semibold">Current Trade Signals</h2>
-          <Badge variant="outline" className="bg-primary/10">
-            {signals.length} Active
-          </Badge>
+          <div className="flex items-center space-x-2">
+            {pollingErrorCount > 0 && isAnalyzing && (
+              <Badge variant="outline" className="bg-warning/10 text-warning-foreground">
+                Polling Error: {pollingErrorCount}/20
+              </Badge>
+            )}
+            <Badge variant="outline" className="bg-primary/10">
+              {signals.length} Active
+            </Badge>
+          </div>
         </div>
         
         {loading && <p>Loading signals...</p>}
