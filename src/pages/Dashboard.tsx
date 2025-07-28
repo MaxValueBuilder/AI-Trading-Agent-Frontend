@@ -39,9 +39,12 @@ export default function Dashboard({ registerRefresh }: DashboardProps) {
   const [selectedCoin, setSelectedCoin] = useState('BTC');
   const [showConfirmDialog, setShowConfirmDialog] = useState(false);
   const [pendingCoin, setPendingCoin] = useState<string | null>(null);
+  const [isAnalyzing, setIsAnalyzing] = useState(false);
 
-  const fetchSignals = useCallback(async () => {
-    setLoading(true);
+  const fetchSignals = useCallback(async (showLoading = true) => {
+    if (showLoading) {
+      setLoading(true);
+    }
     setError(null);
     try {
       const data = await getCurrentSignals();
@@ -49,7 +52,9 @@ export default function Dashboard({ registerRefresh }: DashboardProps) {
     } catch (e: any) {
       setError(e.message || 'Failed to fetch signals');
     } finally {
-      setLoading(false);
+      if (showLoading) {
+        setLoading(false);
+      }
     }
   }, []);
 
@@ -70,6 +75,19 @@ export default function Dashboard({ registerRefresh }: DashboardProps) {
     fetchSignals();
   }, [fetchSignals]);
 
+  // Auto-refresh when there's an analyzing signal
+  useEffect(() => {
+    const hasAnalyzingSignal = signals.some(signal => signal.status === 'analyzing');
+    
+    if (hasAnalyzingSignal) {
+      const interval = setInterval(() => {
+        fetchSignals(false); // Don't show loading state during polling
+      }, 5000); // Poll every 5 seconds
+      
+      return () => clearInterval(interval);
+    }
+  }, [signals, fetchSignals]);
+
   const handleViewScreenshot = (screenshotUrl: string, screenshotType: string) => {
     setSelectedScreenshot({ url: screenshotUrl, type: screenshotType });
   };
@@ -85,15 +103,37 @@ export default function Dashboard({ registerRefresh }: DashboardProps) {
     setSelectedCoin(pendingCoin);
     setTriggeringCoin(pendingCoin);
     setShowConfirmDialog(false);
+    setIsAnalyzing(true);
+    
+    // Create an immediate analyzing signal
+    const analyzingSignal = {
+      id: `analyzing-${Date.now()}`,
+      asset: pendingCoin,
+      signal: 'Long' as const, // Placeholder, will be updated when real signal comes
+      status: 'analyzing' as const,
+      timestamp: new Date().toISOString(),
+      gpt_signal: {
+        confidence: '-',
+        entry: [],
+        stop_loss: [],
+        take_profits: [],
+        reason: 'AI is analyzing market data...'
+      }
+    };
+    
+    setSignals(prev => [analyzingSignal, ...prev]);
     
     try {
       await triggerSignal(pendingCoin);
       await fetchSignals();
     } catch (e: any) {
       setError(e.message || 'Failed to trigger signal');
+      // Remove the analyzing signal on error
+      setSignals(prev => prev.filter(s => s.id !== analyzingSignal.id));
     } finally {
       setTriggeringCoin(null);
       setPendingCoin(null);
+      setIsAnalyzing(false);
     }
   };
 
@@ -155,7 +195,7 @@ export default function Dashboard({ registerRefresh }: DashboardProps) {
       </div>
 
       {/* Coin Selector */}
-      <CoinSelector selectedCoin={selectedCoin} onSelect={handleCoinSelect} />
+      <CoinSelector selectedCoin={selectedCoin} onSelect={handleCoinSelect} disabled={isAnalyzing} />
 
       {/* Current Signals */}
       <div className="space-y-4">
@@ -171,7 +211,6 @@ export default function Dashboard({ registerRefresh }: DashboardProps) {
         {!loading && !error && (
           <div className="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-4">
             {signals.map((signal) => (
-              console.log("----------------> signal", signal.id),
               <SignalCard
                 key={signal.id}
                 signal={signal}
@@ -180,7 +219,7 @@ export default function Dashboard({ registerRefresh }: DashboardProps) {
             ))}
           </div>
         )}
-        {!loading && !error && signals.length === 0 && (
+        {!loading && !error && signals.length === 0 && !isAnalyzing && (
           <p>No active signals at the moment. Select a coin to generate a new signal.</p>
         )}
       </div>

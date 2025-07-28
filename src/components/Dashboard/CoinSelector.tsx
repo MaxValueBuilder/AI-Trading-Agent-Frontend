@@ -13,9 +13,10 @@ interface CoinSelectorProps {
   selectedCoin: string;
   onSelect: (coin: string) => void;
   coins?: string[]; // Optional: allow custom coin list
+  disabled?: boolean; // Optional: disable coin selection
 }
 
-export function CoinSelector({ selectedCoin, onSelect, coins = DEFAULT_COINS }: CoinSelectorProps) {
+export function CoinSelector({ selectedCoin, onSelect, coins = DEFAULT_COINS, disabled = false }: CoinSelectorProps) {
   const { 
     prices: coinData, 
     isConnected, 
@@ -73,12 +74,21 @@ export function CoinSelector({ selectedCoin, onSelect, coins = DEFAULT_COINS }: 
             variant="ghost" 
             size="sm" 
             onClick={() => reconnect()}
-            disabled={!isConnected}
+            disabled={!isConnected || disabled}
           >
             <RefreshCw className="h-4 w-4" />
           </Button>
         </div>
       </div>
+      
+      {disabled && (
+        <Alert>
+          <AlertCircle className="h-4 w-4" />
+          <AlertDescription>
+            <strong>Analysis in Progress:</strong> Please wait while the AI analyzes the current signal. New signals cannot be generated during analysis.
+          </AlertDescription>
+        </Alert>
+      )}
       
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
         {!isConnected ? (
@@ -101,8 +111,13 @@ export function CoinSelector({ selectedCoin, onSelect, coins = DEFAULT_COINS }: 
             <Button
               key={coin.symbol}
               variant={selectedCoin === coin.symbol ? "default" : "outline"}
-              className="p-4 h-auto flex flex-col items-start space-y-2 hover:shadow-md transition-shadow"
+              className={`p-4 h-auto flex flex-col items-start space-y-2 transition-shadow ${
+                disabled 
+                  ? 'opacity-50 cursor-not-allowed' 
+                  : 'hover:shadow-md'
+              }`}
               onClick={() => onSelect(coin.symbol)}
+              disabled={disabled}
             >
               <div className="flex items-center justify-between w-full">
                 <span className="font-bold text-lg">{coin.symbol}</span>

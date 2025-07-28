@@ -2,7 +2,7 @@ import React from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
-import { TrendingUp, TrendingDown, Eye, Clock, CheckCircle, ChevronDown } from 'lucide-react';
+import { TrendingUp, TrendingDown, Eye, Clock, CheckCircle, ChevronDown, Loader2 } from 'lucide-react';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
 
 interface Signal {
@@ -16,7 +16,7 @@ interface Signal {
     reason?: string;
   };
   signal: 'Long' | 'Short';
-  status: 'waiting' | 'confirmed' | 'completed';
+  status: 'analyzing' | 'waiting' | 'confirmed' | 'completed';
   timestamp: string;
   screenshots?: {
     [key: string]: string;
@@ -41,6 +41,8 @@ export function SignalCard({ signal, onViewScreenshot }: SignalCardProps) {
 
   const getStatusIcon = () => {
     switch (signal.status) {
+      case 'analyzing':
+        return <Loader2 className="h-4 w-4 animate-spin" />;
       case 'waiting':
         return <Clock className="h-4 w-4" />;
       case 'confirmed':
@@ -54,6 +56,8 @@ export function SignalCard({ signal, onViewScreenshot }: SignalCardProps) {
 
   const getStatusColor = () => {
     switch (signal.status) {
+      case 'analyzing':
+        return 'bg-blue-500';
       case 'waiting':
         return 'bg-warning';
       case 'confirmed':
@@ -97,7 +101,6 @@ export function SignalCard({ signal, onViewScreenshot }: SignalCardProps) {
 
   // Helper to format array of numbers as comma-separated string
   const formatNumberArray = (arr?: number[]) => {
-    console.log("----------------> arr", arr);
     if (!arr || arr.length === 0) return '-';
     return arr.join(', ');
   };
@@ -150,7 +153,15 @@ export function SignalCard({ signal, onViewScreenshot }: SignalCardProps) {
           </div>
         </div>    
 
-        {signal.screenshots && Object.keys(signal.screenshots).length > 0 && (
+        {signal.status === 'analyzing' && (!signal.screenshots || Object.keys(signal.screenshots).length === 0) ? (
+          <div className="flex items-center justify-center py-4">
+            <div className="text-center">
+              <Loader2 className="h-6 w-6 animate-spin mx-auto mb-2 text-blue-500" />
+              <p className="text-sm text-muted-foreground">AI is analyzing market data...</p>
+              <p className="text-xs text-muted-foreground mt-1">This may take up to 1 minute</p>
+            </div>
+          </div>
+        ) : signal.screenshots && Object.keys(signal.screenshots).length > 0 && (
           <div className="flex justify-between items-center">
             <span className="text-sm text-muted-foreground">
               {Object.keys(signal.screenshots).length} Chart Analysis Available
