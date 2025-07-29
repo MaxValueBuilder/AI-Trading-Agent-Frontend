@@ -1,5 +1,7 @@
 // API utility for backend integration
 import { getAuth } from 'firebase/auth';
+import { doc, getDoc } from 'firebase/firestore';
+import { db } from './firebase';
 
 // Environment-aware BASE_URL configuration
 const BASE_URL = import.meta.env.VITE_BACKEND_URL || 'http://localhost:8000';
@@ -56,6 +58,12 @@ export interface CloseTradeRequest {
   notes?: string;
 }
 
+// Update signal status request interface
+export interface UpdateSignalStatusRequest {
+  status: string;
+  notes?: string;
+}
+
 // Get coin name mapping (used by WebSocket hook)
 export function getCoinName(symbol: string): string {
   const coinNames: { [key: string]: string } = {
@@ -107,10 +115,37 @@ export async function closeTrade(signalId: string, pnl: number, notes?: string) 
   });
 }
 
+export async function updateSignalStatus(signalId: string, status: string, notes?: string) {
+  console.log('Updating signal status', signalId, 'to:', status);
+  return apiFetch(`/signals/${signalId}/status`, {
+    method: 'PUT',
+    body: JSON.stringify({ status, notes }),
+  });
+}
+
 export async function triggerSignal(coin: string) {
+  // Get user's telegramId from Firebase
+  const auth = getAuth();
+  const user = auth.currentUser;
+  let telegramId = null;
+  
+  if (user) {
+    try {
+      const userDoc = await getDoc(doc(db, 'users', user.uid));
+      if (userDoc.exists()) {
+        const userData = userDoc.data();
+        telegramId = userData.telegramId;
+      }
+    } catch (error) {
+      console.error('Failed to get user telegramId:', error);
+    }
+  }
+  
+  console.log('Triggering signal for', coin, 'with telegramId:', telegramId);
+  
   return apiFetch('/signals/trigger', {
     method: 'POST',
-    body: JSON.stringify({ coin }),
+    body: JSON.stringify({ coin, telegramId }),
   });
 }
 
