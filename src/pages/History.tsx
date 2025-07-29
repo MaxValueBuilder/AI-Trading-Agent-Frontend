@@ -304,7 +304,6 @@ export default function History() {
                             onClick={() => handleCloseTrade(signal)}
                             className="flex items-center space-x-1"
                           >
-                            <DollarSign className="h-3 w-3" />
                             <span>Close</span>
                           </Button>
                         )}
