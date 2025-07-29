@@ -6,7 +6,7 @@ import { Alert, AlertDescription } from '@/components/ui/alert';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { TrendingUp, TrendingDown, Clock, AlertTriangle, X } from 'lucide-react';
-import { getCurrentSignals, triggerSignal } from '@/lib/api';
+import { getCurrentSignals, triggerSignal, getTradingStats, TradingStats } from '@/lib/api';
 import { Navbar } from '@/components/Layout/Navbar';
 import { Button } from '@/components/ui/button';
 import {
@@ -46,6 +46,12 @@ export default function Dashboard({ registerRefresh }: DashboardProps) {
   });
   const [pollingErrorCount, setPollingErrorCount] = useState(0);
   const [showPollingErrorAlert, setShowPollingErrorAlert] = useState(false);
+  const [stats, setStats] = useState<TradingStats>({
+    active_signals: 0,
+    today_pnl: 0,
+    win_rate: 0,
+    risk_level: 'Medium'
+  });
 
   const fetchSignals = useCallback(async (showLoading = true) => {
     if (showLoading) {
@@ -89,6 +95,16 @@ export default function Dashboard({ registerRefresh }: DashboardProps) {
     }
   }, [pollingErrorCount]);
 
+  const fetchStats = useCallback(async () => {
+    try {
+      const statsData = await getTradingStats();
+      setStats(statsData);
+    } catch (e: any) {
+      console.error('Failed to fetch stats:', e);
+      // Don't show error for stats, just log it
+    }
+  }, []);
+
   // Update localStorage when isAnalyzing changes
   useEffect(() => {
     localStorage.setItem('isAnalyzing', isAnalyzing.toString());
@@ -116,7 +132,7 @@ export default function Dashboard({ registerRefresh }: DashboardProps) {
 
   const handleRefresh = async () => {
     setRefreshing(true);
-    await fetchSignals();
+    await Promise.all([fetchSignals(), fetchStats()]);
     setRefreshing(false);
   };
 
@@ -129,7 +145,8 @@ export default function Dashboard({ registerRefresh }: DashboardProps) {
 
   useEffect(() => {
     fetchSignals();
-  }, [fetchSignals]);
+    fetchStats();
+  }, [fetchSignals, fetchStats]);
 
   // Auto-refresh when there's an analyzing signal
   useEffect(() => {
@@ -138,11 +155,12 @@ export default function Dashboard({ registerRefresh }: DashboardProps) {
     if (hasAnalyzingSignal) {
       const interval = setInterval(() => {
         fetchSignals(false); // Don't show loading state during polling
+        fetchStats(); // Also refresh stats during polling
       }, 5000); // Poll every 5 seconds
       
       return () => clearInterval(interval);
     }
-  }, [signals, fetchSignals]);
+  }, [signals, fetchSignals, fetchStats]);
 
   const handleViewScreenshot = (screenshotUrl: string, screenshotType: string) => {
     setSelectedScreenshot({ url: screenshotUrl, type: screenshotType });
@@ -183,7 +201,7 @@ export default function Dashboard({ registerRefresh }: DashboardProps) {
     
     try {
       await triggerSignal(pendingCoin);
-      await fetchSignals();
+      await Promise.all([fetchSignals(), fetchStats()]);
     } catch (e: any) {
       setError(e.message || 'Failed to trigger signal');
       // Remove the analyzing signal on error
@@ -220,11 +238,31 @@ export default function Dashboard({ registerRefresh }: DashboardProps) {
     return displayNames[type] || type.replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase());
   };
 
-  const stats = [
-    { label: 'Active Signals', value: '2', icon: Clock, color: 'text-warning' },
-    { label: 'Today\'s Profit', value: '+$1,247', icon: TrendingUp, color: 'text-success' },
-    { label: 'Win Rate', value: '78.4%', icon: TrendingUp, color: 'text-success' },
-    { label: 'Risk Level', value: 'Medium', icon: AlertTriangle, color: 'text-warning' }
+  const statsData = [
+    { 
+      label: 'Active Signals', 
+      value: stats.active_signals.toString(), 
+      icon: Clock, 
+      color: 'text-warning' 
+    },
+    { 
+      label: 'Today\'s Profit', 
+      value: `${stats.today_pnl >= 0 ? '+' : ''}$${stats.today_pnl.toFixed(0)}`, 
+      icon: TrendingUp, 
+      color: stats.today_pnl >= 0 ? 'text-success' : 'text-destructive' 
+    },
+    { 
+      label: 'Win Rate', 
+      value: `${stats.win_rate.toFixed(1)}%`, 
+      icon: TrendingUp, 
+      color: stats.win_rate >= 50 ? 'text-success' : 'text-destructive' 
+    },
+    { 
+      label: 'Risk Level', 
+      value: stats.risk_level, 
+      icon: AlertTriangle, 
+      color: 'text-warning' 
+    }
   ];
 
   return (
@@ -259,7 +297,7 @@ export default function Dashboard({ registerRefresh }: DashboardProps) {
 
       {/* Stats Overview */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-        {stats.map((stat) => (
+        {statsData.map((stat) => (
           <Card key={stat.label}>
             <CardContent className="p-6">
               <div className="flex items-center space-x-2">

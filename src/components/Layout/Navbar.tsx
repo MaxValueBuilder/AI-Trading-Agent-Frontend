@@ -92,9 +92,9 @@ export function Navbar({ onRefresh, refreshing }: { onRefresh?: () => void; refr
 
           <Button variant="ghost" size="sm" className="w-9 h-9 p-0 relative">
             <Bell className="h-4 w-4" />
-            <Badge className="absolute -top-1 -right-1 w-5 h-5 rounded-full p-0 flex items-center justify-center text-xs">
+            {/* <Badge className="absolute -top-1 -right-1 w-5 h-5 rounded-full p-0 flex items-center justify-center text-xs">
               3
-            </Badge>
+            </Badge> */}
           </Button>
 
           {/* User Profile */}

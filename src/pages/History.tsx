@@ -18,8 +18,9 @@ import {
   PaginationNext, 
   PaginationPrevious 
 } from '@/components/ui/pagination';
-import { TrendingUp, TrendingDown, Filter } from 'lucide-react';
+import { TrendingUp, TrendingDown, Filter, DollarSign } from 'lucide-react';
 import { getSignalHistory } from '@/lib/api';
+import { CloseTradeModal } from '@/components/Dashboard/CloseTradeModal';
 
 interface HistoricalSignal {
   id: string;
@@ -59,6 +60,8 @@ export default function History() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [currentPage, setCurrentPage] = useState(1);
+  const [closeModalOpen, setCloseModalOpen] = useState(false);
+  const [selectedSignal, setSelectedSignal] = useState<HistoricalSignal | null>(null);
   const itemsPerPage = 10;
 
   const fetchHistory = useCallback(async () => {
@@ -78,6 +81,15 @@ export default function History() {
   useEffect(() => {
     fetchHistory();
   }, [fetchHistory]);
+
+  const handleCloseTrade = (signal: HistoricalSignal) => {
+    setSelectedSignal(signal);
+    setCloseModalOpen(true);
+  };
+
+  const handleTradeClosed = () => {
+    fetchHistory(); // Refresh the history after closing a trade
+  };
 
   const totalPages = Math.ceil(signals.length / itemsPerPage);
   const startIndex = (currentPage - 1) * itemsPerPage;
@@ -113,7 +125,11 @@ export default function History() {
 
   // Helper to get PnL
   const getPnL = (signal: HistoricalSignal) => {
-    return signal.pnl ?? '-';
+    if (signal.pnl !== undefined && signal.pnl !== null) {
+      const pnlValue = typeof signal.pnl === 'number' ? signal.pnl : parseFloat(signal.pnl.toString());
+      return isNaN(pnlValue) ? '-' : `$${pnlValue.toFixed(2)}`;
+    }
+    return '-';
   };
 
   // Helper to get PnL Percentage
@@ -123,6 +139,10 @@ export default function History() {
 
   // Helper to get result
   const getResult = (signal: HistoricalSignal) => {
+    if (signal.status === 'completed' && signal.pnl !== undefined && signal.pnl !== null) {
+      const pnlValue = typeof signal.pnl === 'number' ? signal.pnl : parseFloat(signal.pnl.toString());
+      return !isNaN(pnlValue) && pnlValue > 0 ? 'profit' : 'loss';
+    }
     return signal.result ?? '-';
   };
 
@@ -135,13 +155,18 @@ export default function History() {
 
   // Calculate total PnL
   const totalPnL = signals.reduce((sum, signal) => {
-    const pnlRaw = getPnL(signal);
-    const pnl = typeof pnlRaw === 'number' ? pnlRaw : parseFloat((pnlRaw || '0').toString().replace(/[+$]/g, ''));
-    return sum + (isNaN(pnl) ? 0 : pnl);
+    if (signal.pnl !== undefined && signal.pnl !== null) {
+      const pnlValue = typeof signal.pnl === 'number' ? signal.pnl : parseFloat(signal.pnl.toString());
+      return sum + (isNaN(pnlValue) ? 0 : pnlValue);
+    }
+    return sum;
   }, 0);
 
   // Calculate win rate
-  const winRate = signals.length > 0 ? (signals.filter(s => getResult(s) === 'profit').length / signals.length) * 100 : 0;
+  const completedTrades = signals.filter(s => s.status === 'completed');
+  const winRate = completedTrades.length > 0 
+    ? (completedTrades.filter(s => getResult(s) === 'profit').length / completedTrades.length) * 100 
+    : 0;
 
   return (
     <div className="container mx-auto p-6 space-y-6">
@@ -157,7 +182,9 @@ export default function History() {
         <Card>
           <CardContent className="p-6">
             <div className="text-center">
-              <div className="text-2xl font-bold text-success">+${totalPnL.toFixed(0)}</div>
+              <div className={`text-2xl font-bold ${totalPnL >= 0 ? 'text-success' : 'text-destructive'}`}>
+                {totalPnL >= 0 ? '+' : ''}${totalPnL.toFixed(2)}
+              </div>
               <div className="text-sm text-muted-foreground">Total P&L</div>
             </div>
           </CardContent>
@@ -198,7 +225,8 @@ export default function History() {
                   <TableHead>Exit</TableHead>
                   <TableHead>P&L</TableHead>
                   <TableHead>Confidence</TableHead>
-                  <TableHead>Result</TableHead>
+                  <TableHead>Status</TableHead>
+                  <TableHead>Actions</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
@@ -206,6 +234,7 @@ export default function History() {
                   const direction = getDirection(signal);
                   const result = getResult(signal);
                   const confidence = getConfidence(signal);
+                  const pnl = getPnL(signal);
                   return (
                     <TableRow key={signal.id || signal.doc_id}>
                       <TableCell className="font-mono text-sm">
@@ -228,10 +257,10 @@ export default function History() {
                       <TableCell className="font-mono">{getExit(signal)}</TableCell>
                       <TableCell>
                         <div className="text-right">
-                          <div className={`font-mono ${result === 'profit' ? 'text-success' : 'text-destructive'}`}>
-                            {getPnL(signal)}
+                          <div className={`font-mono ${result === 'profit' ? 'text-success' : result === 'loss' ? 'text-destructive' : 'text-muted-foreground'}`}>
+                            {pnl}
                           </div>
-                          <div className={`text-xs ${result === 'profit' ? 'text-success' : 'text-destructive'}`}>
+                          <div className={`text-xs ${result === 'profit' ? 'text-success' : result === 'loss' ? 'text-destructive' : 'text-muted-foreground'}`}>
                             {getPnLPercentage(signal)}
                           </div>
                         </div>
@@ -250,9 +279,35 @@ export default function History() {
                         </Badge>
                       </TableCell>
                       <TableCell>
-                        <Badge variant={result === 'profit' ? 'default' : 'destructive'}>
-                          {result === 'profit' ? 'Profit' : result === 'loss' ? 'Loss' : '-'}
+                        <Badge 
+                          variant={
+                            signal.status === 'completed' 
+                              ? (result === 'profit' ? 'default' : 'destructive')
+                              : signal.status === 'confirmed' 
+                              ? 'secondary'
+                              : 'outline'
+                          }
+                        >
+                          {signal.status === 'completed' 
+                            ? (result === 'profit' ? 'Profit' : 'Loss')
+                            : signal.status === 'confirmed' 
+                            ? 'Confirmed'
+                            : signal.status
+                          }
                         </Badge>
+                      </TableCell>
+                      <TableCell>
+                        {signal.status === 'confirmed' && (
+                          <Button
+                            size="sm"
+                            variant="outline"
+                            onClick={() => handleCloseTrade(signal)}
+                            className="flex items-center space-x-1"
+                          >
+                            <DollarSign className="h-3 w-3" />
+                            <span>Close</span>
+                          </Button>
+                        )}
                       </TableCell>
                     </TableRow>
                   );
@@ -292,6 +347,17 @@ export default function History() {
           </div>
         </CardContent>
       </Card>
+
+      {/* Close Trade Modal */}
+      {selectedSignal && (
+        <CloseTradeModal
+          isOpen={closeModalOpen}
+          onClose={() => setCloseModalOpen(false)}
+          signalId={selectedSignal.id || selectedSignal.doc_id || ''}
+          asset={selectedSignal.asset}
+          onTradeClosed={handleTradeClosed}
+        />
+      )}
     </div>
   );
 }

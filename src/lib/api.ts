@@ -42,6 +42,20 @@ export interface CoinPriceData {
   low24h: string;
 }
 
+// Trading stats interface
+export interface TradingStats {
+  active_signals: number;
+  today_pnl: number;
+  win_rate: number;
+  risk_level: string;
+}
+
+// Close trade request interface
+export interface CloseTradeRequest {
+  pnl: number;
+  notes?: string;
+}
+
 // Get coin name mapping (used by WebSocket hook)
 export function getCoinName(symbol: string): string {
   const coinNames: { [key: string]: string } = {
@@ -78,6 +92,19 @@ export async function getCurrentSignals() {
 export async function getSignalHistory() {
   console.log('Getting signal history');
   return apiFetch('/signals/history');
+}
+
+export async function getTradingStats(): Promise<TradingStats> {
+  console.log('Getting trading stats');
+  return apiFetch('/signals/stats');
+}
+
+export async function closeTrade(signalId: string, pnl: number, notes?: string) {
+  console.log('Closing trade', signalId, 'with P&L:', pnl);
+  return apiFetch(`/signals/${signalId}/close`, {
+    method: 'PUT',
+    body: JSON.stringify({ pnl, notes }),
+  });
 }
 
 export async function triggerSignal(coin: string) {
