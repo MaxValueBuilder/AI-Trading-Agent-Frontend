@@ -1,105 +1,146 @@
-# Welcome to your Lovable project
+# 🧭 Bitiq Frontend [P-666]
 
-## Project info
+A modern web app for the Bitiq trading and signals platform—subscription, auto-trading, copilot, admin CMS, and user account management in one responsive UI.
 
-**URL**: https://lovable.dev/projects/2baa054a-ffff-42ee-bdbb-dcce7655cbfd
+---
 
-## How can I edit this code?
+## 📚 Table of Contents
 
-There are several ways of editing your application.
+[About](#-about) · [Features](#-features) · [Tech Stack](#-tech-stack) · [Installation](#-installation) · [Usage](#-usage) · [Configuration](#-configuration) · [Screenshots](#-screenshots) · [API Documentation](#-api-documentation) · [Contact](#-contact)
 
-**Use Lovable**
+---
 
-Simply visit the [Lovable Project](https://lovable.dev/projects/2baa054a-ffff-42ee-bdbb-dcce7655cbfd) and start prompting.
+## 🧩 About
 
-Changes made via Lovable will be committed automatically to this repo.
+This frontend provides the main user interface for Bitiq: landing, trading signals, auto-trading, Bitiq Copilot, subscription flows, documentation, blog, and an admin dashboard. It connects to a backend API and Supabase for auth and data, with optional Firebase for push notifications.
 
-**Use your preferred IDE**
+---
 
-If you want to work locally using your own IDE, you can clone this repo and push changes. Pushed changes will also be reflected in Lovable.
+## ✨ Features
 
-The only requirement is having Node.js & npm installed - [install with nvm](https://github.com/nvm-sh/nvm#installing-and-updating)
+- **Landing & marketing** – Public landing, how it works, pricing, testimonials
+- **Trading signals** – View and manage trading signals with quality scores
+- **Auto-trading & Bitiq Copilot** – Trading automation and AI copilot flows
+- **Subscription & payments** – Plans, checkout, payment success handling
+- **Account & settings** – User profile, settings, RTL support
+- **Admin CMS** – Dashboard, users, signals, config, logs, CMS content
+- **i18n** – Multi-language support (e.g. via translation service)
+- **Push notifications** – Firebase Cloud Messaging (optional)
 
-Follow these steps:
+---
 
-```sh
-# Step 1: Clone the repository using the project's Git URL.
-git clone <YOUR_GIT_URL>
+## 🧠 Tech Stack
 
-# Step 2: Navigate to the project directory.
-cd <YOUR_PROJECT_NAME>
+| Category   | Technologies |
+|-----------|--------------|
+| **Languages** | TypeScript, JavaScript |
+| **Frameworks** | React 18, Vite |
+| **UI** | shadcn/ui, Radix UI, Tailwind CSS, Lucide icons |
+| **State & Data** | TanStack Query, Zustand, React Hook Form, Zod |
+| **Backend / Auth** | Supabase (auth & optional DB), REST API |
+| **Other** | Firebase (FCM), i18next, Recharts, React Router, Vercel Analytics |
+| **Tools** | ESLint, PostCSS, Autoprefixer |
 
-# Step 3: Install the necessary dependencies.
-npm i
+---
 
-# Step 4: Start the development server with auto-reloading and an instant preview.
+## ⚙️ Installation
+
+```bash
+# Clone the repository
+git clone https://github.com/MaxValueBuilder/bitiq-frontend-v.2.git
+
+# Navigate to the project directory
+cd bitiq-frontend-v.2
+
+# Install dependencies
+npm install
+```
+
+**Requirements:** Node.js and npm (e.g. [install with nvm](https://github.com/nvm-sh/nvm#installing-and-updating)).
+
+---
+
+## 🚀 Usage
+
+```bash
+# Start the development server
 npm run dev
 ```
 
-**Edit a file directly in GitHub**
+Then open your browser at:  
+👉 [http://localhost:5173](http://localhost:5173) (Vite default)
 
-- Navigate to the desired file(s).
-- Click the "Edit" button (pencil icon) at the top right of the file view.
-- Make your changes and commit the changes.
+Other commands:
 
-**Use GitHub Codespaces**
+- `npm run build` – production build  
+- `npm run preview` – preview production build locally  
+- `npm run lint` – run ESLint  
 
-- Navigate to the main page of your repository.
-- Click on the "Code" button (green button) near the top right.
-- Select the "Codespaces" tab.
-- Click on "New codespace" to launch a new Codespace environment.
-- Edit files directly within the Codespace and commit and push your changes once you're done.
+---
 
-## Environment Setup
+## 🧾 Configuration
 
-### Local Development
-
-Create a `.env` file in the root directory with the following variables:
+Create a `.env` file in the project root with the required variables:
 
 ```env
-# Backend API URL
-VITE_BACKEND_URL=http://localhost:8000
+# API
+VITE_API_BASE_URL=http://localhost:8000
 
-# Firebase Configuration (if needed)
-# VITE_FIREBASE_API_KEY=your_firebase_api_key
-# VITE_FIREBASE_AUTH_DOMAIN=your_firebase_auth_domain
-# VITE_FIREBASE_PROJECT_ID=your_firebase_project_id
+# Supabase
+VITE_SUPABASE_URL=your_supabase_url
+VITE_SUPABASE_ANON_KEY=your_supabase_anon_key
+
+# Firebase (optional, for push notifications)
+VITE_FIREBASE_API_KEY=
+VITE_FIREBASE_AUTH_DOMAIN=
+VITE_FIREBASE_PROJECT_ID=
+VITE_FIREBASE_STORAGE_BUCKET=
+VITE_FIREBASE_MESSAGING_SENDER_ID=
+VITE_FIREBASE_APP_ID=
+VITE_FIREBASE_VAPID_KEY=
+
+# Optional: Google Translate for translations
+VITE_GOOGLE_TRANSLATE_API_KEY=
 ```
 
-### Vercel Deployment
+---
 
-When deploying to Vercel, you need to set environment variables in the Vercel dashboard:
+## 🖼 Screenshots
 
-1. Go to your Vercel project dashboard
-2. Navigate to **Settings** → **Environment Variables**
-3. Add the following variable:
-   - **Name**: `VITE_BACKEND_URL`
-   - **Value**: Your production backend URL (e.g., `https://your-backend-domain.com`)
-   - **Environment**: Select all environments (Production, Preview, Development)
+### Landing page
+![Landing page](public/images/screenshot_1.png)
 
-**Important**:
+### Dashboard
+![Dashboard](public/images/screenshot_2.png)
+---
 
-- In Vite, environment variables must be prefixed with `VITE_` to be accessible in the client-side code
-- After adding environment variables in Vercel, redeploy your application for changes to take effect
+## 📜 API Documentation
 
-## What technologies are used for this project?
+The app talks to a backend API. Typical usage:
 
-This project is built with:
+- **Auth** – Supabase auth; session handled in-app  
+- **Public CMS** – `GET /api/v1/public/cms/{section}?lang={language}`  
+- **Admin** – Endpoints under the same `VITE_API_BASE_URL` (users, signals, config, logs, etc.)  
+- **Subscription** – Subscription/payment endpoints via `subscriptionApi`  
 
-- Vite
-- TypeScript
-- React
-- shadcn-ui
-- Tailwind CSS
+For full API details, refer to the backend/API documentation.
 
-## How can I deploy this project?
+---
 
-Simply open [Lovable](https://lovable.dev/projects/2baa054a-ffff-42ee-bdbb-dcce7655cbfd) and click on Share -> Publish.
+## 📬 Contact
 
-## Can I connect a custom domain to my Lovable project?
+| | |
+|---|---|
+| **Author** | Kanjiro Honda |
+| **Email** | kanjirohonda@gmail.com |
+| **GitHub** | https://github.com/MaxValueBuilder |
+| **Website/Portfolio** | https://kanjiro-honda-portfolio.vercel.app/ |
 
-Yes, you can!
+---
 
-To connect a domain, navigate to Project > Settings > Domains and click Connect Domain.
+## 🌟 Acknowledgements
 
-Read more here: [Setting up a custom domain](https://docs.lovable.dev/tips-tricks/custom-domain#step-by-step-guide)
+- [Lovable](https://lovable.dev) – initial project setup and deployment options  
+- [shadcn/ui](https://ui.shadcn.com/) – UI components  
+- [Vite](https://vitejs.dev/) – build tooling  
+- [Supabase](https://supabase.com/) – auth and backend services  

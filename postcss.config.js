@@ -3,4 +3,6 @@ export default {
     tailwindcss: {},
     autoprefixer: {},
   },
-}
+  map: process.env.NODE_ENV === 'development' ? 'inline' : false,
+
+};

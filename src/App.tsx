@@ -2,76 +2,127 @@ import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
-import { ThemeProvider } from "@/contexts/ThemeContext";
-import { AuthProvider, useAuth } from "@/contexts/AuthContext";
-import { Navbar } from "@/components/Layout/Navbar";
-import Dashboard from "./pages/Dashboard";
-import History from "./pages/History";
+import { BrowserRouter, Routes, Route } from "react-router-dom";
+import { ThemeProvider } from "next-themes";
+import { AuthProvider } from "@/contexts/AuthContext";
+import { ProtectedRoute } from "@/components/ProtectedRoute";
+import { HelmetProvider } from "react-helmet-async";
+import { Analytics } from '@vercel/analytics/react';
+import "./lib/i18n";
+import Landing from "./pages/Landing";
+import Dashboard from "./pages/Index";
+import BitiqCopilot from "./pages/BitiqCopilot";
+import AutoTrading from "./pages/AutoTrading";
 import HowItWorks from "./pages/HowItWorks";
+import Settings from "./pages/Settings";
+import Account from "./pages/Account";
+import Admin from "./pages/Admin";
 import Login from "./pages/Login";
-import PendingApproval from "./pages/PendingApproval";
+import Signup from "./pages/Signup";
+import Subscription from "./pages/Subscription";
+import PaymentSuccess from "./pages/PaymentSuccess";
+import Documentation from "./pages/Documentation";
+import Blog from "./pages/Blog";
 import NotFound from "./pages/NotFound";
-import { useState, useCallback } from "react";
+// Legal pages - Dynamic route
+import LegalPage from "./pages/legal/LegalPage";
+import { useEffect } from 'react';
+import { useNotificationStore } from '@/stores/notificationStore';
+import { onForegroundMessage, getFCMToken } from '@/lib/firebase';
+import { useSignalsRefreshStore } from '@/stores/signalsRefreshStore';
+import { useRTL } from '@/hooks/useRTL';
 
 const queryClient = new QueryClient();
 
-function ProtectedRoute({ children }: { children: React.ReactNode }) {
-  const { currentUser } = useAuth();
-  return currentUser ? <>{children}</> : <Navigate to="/login" />;
-}
+// Create a component to handle notification initialization
+const NotificationInitializer = () => {
+  useEffect(() => {
+    console.log("🚀 App: Initializing notifications...");
+    
+    // Load persisted state
+    useNotificationStore.getState().loadFromStorage();
+    // Set up Firebase message listener
+    const unsubscribe = onForegroundMessage();
+    
+    return () => {
+      if (unsubscribe) {
+        console.log("🚀 App: Cleaning up Firebase listener");
+        unsubscribe();
+      }
+    };
+  }, []);
 
-const App = () => {
-  // Navbar refresh state/handler, lifted to App so it can be passed to Dashboard and Navbar
-  const [refreshing, setRefreshing] = useState(false);
-  const [refreshFn, setRefreshFn] = useState<(() => Promise<void>) | null>(null);
+  return null; // This component doesn't render anything
+};
 
-  // Handler to be called by Navbar
-  const handleNavbarRefresh = useCallback(async () => {
-    if (refreshFn) {
-      setRefreshing(true);
-      await refreshFn();
-      setRefreshing(false);
+// Component to handle RTL
+const RTLHandler = () => {
+  useRTL(); // This will handle the RTL setup
+  return null;
+};
+
+// Component to handle language initialization
+const LanguageInitializer = () => {
+  useEffect(() => {
+    // Ensure language is loaded from localStorage on app startup
+    const savedLanguage = localStorage.getItem('i18nextLng');
+    if (savedLanguage) {
+      // Force i18n to use the saved language
+      import('./lib/i18n').then(({ default: i18n }) => {
+        if (i18n.language !== savedLanguage) {
+          i18n.changeLanguage(savedLanguage);
+        }
+      });
     }
-  }, [refreshFn]);
+  }, []);
 
-  // Dashboard will register its refresh function
-  const dashboardProps = {
-    registerRefresh: (fn: () => Promise<void>) => setRefreshFn(() => fn),
-  };
+  return null;
+};
 
-  return (
-    <QueryClientProvider client={queryClient}>
-      <ThemeProvider>
+const App = () => (
+  <HelmetProvider>
+    <ThemeProvider attribute="class" defaultTheme="dark" enableSystem>
+      <QueryClientProvider client={queryClient}>
         <AuthProvider>
           <TooltipProvider>
             <Toaster />
             <Sonner />
+            <NotificationInitializer />
+            <LanguageInitializer />
+            <RTLHandler />
             <BrowserRouter>
-              <div className="min-h-screen bg-background">
-                <Routes>
-                  <Route path="/login" element={<Login />} />
-                  <Route path="/pending" element={<PendingApproval />} />
-                  <Route path="/*" element={
-                    <ProtectedRoute>
-                      {/* Navbar only on protected pages */}
-                      <Navbar onRefresh={handleNavbarRefresh} refreshing={refreshing} />
-                      <Routes>
-                        <Route path="/" element={<Dashboard {...dashboardProps} />} />
-                        <Route path="/history" element={<History />} />
-                        <Route path="/how-it-works" element={<HowItWorks />} />
-                        <Route path="*" element={<NotFound />} />
-                      </Routes>
-                    </ProtectedRoute>
-                  } />
-                </Routes>
-              </div>
+              <Routes>
+                {/* Public routes */}
+                <Route path="/" element={<Landing />} />
+                <Route path="/login" element={<Login />} />
+                <Route path="/signup" element={<Signup />} />
+                <Route path="/subscription/success" element={<PaymentSuccess />} />
+                <Route path="/blog" element={<Blog />} />
+                <Route path="/how-it-works" element={<HowItWorks />} />
+                
+                {/* Legal pages - Dynamic route */}
+                <Route path="/legal/:slug" element={<LegalPage />} />
+                
+                {/* Protected routes */}
+                <Route path="/dashboard" element={<ProtectedRoute><Dashboard /></ProtectedRoute>} />
+                <Route path="/copilot" element={<ProtectedRoute><BitiqCopilot /></ProtectedRoute>} />
+                <Route path="/auto-trading" element={<ProtectedRoute><AutoTrading /></ProtectedRoute>} />
+                <Route path="/documentation" element={<ProtectedRoute><Documentation /></ProtectedRoute>} />
+                <Route path="/settings" element={<ProtectedRoute><Settings /></ProtectedRoute>} />
+                <Route path="/account" element={<ProtectedRoute><Account /></ProtectedRoute>} />
+                <Route path="/subscription" element={<ProtectedRoute><Subscription /></ProtectedRoute>} />
+                <Route path="/admin" element={<ProtectedRoute><Admin /></ProtectedRoute>} />
+                
+                {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
+                <Route path="*" element={<NotFound />} />
+              </Routes>
             </BrowserRouter>
           </TooltipProvider>
         </AuthProvider>
-      </ThemeProvider>
-    </QueryClientProvider>
-  );
-};
+      </QueryClientProvider>
+    </ThemeProvider>
+    <Analytics />
+  </HelmetProvider>
+);
 
 export default App;

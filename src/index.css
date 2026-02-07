@@ -8,99 +8,131 @@ All colors MUST be HSL.
 
 @layer base {
   :root {
-    --background: 240 10% 3.9%;
-    --foreground: 0 0% 98%;
+    /* Crypto Trading Dark Theme */
+    --background: 220 27% 4%;
+    --foreground: 210 40% 98%;
 
-    --card: 240 10% 3.9%;
-    --card-foreground: 0 0% 98%;
+    --card: 220 19% 6%;
+    --card-foreground: 210 40% 98%;
 
-    --popover: 240 10% 3.9%;
-    --popover-foreground: 0 0% 98%;
+    --popover: 220 19% 6%;
+    --popover-foreground: 210 40% 98%;
 
     --primary: 142 76% 36%;
-    --primary-foreground: 0 0% 98%;
+    --primary-foreground: 220 27% 4%;
 
-    --secondary: 240 3.7% 15.9%;
-    --secondary-foreground: 0 0% 98%;
+    --secondary: 220 15% 12%;
+    --secondary-foreground: 210 40% 98%;
 
-    --muted: 240 3.7% 15.9%;
-    --muted-foreground: 240 5% 64.9%;
+    --muted: 220 15% 12%;
+    --muted-foreground: 217 10% 64%;
 
-    --accent: 240 3.7% 15.9%;
-    --accent-foreground: 0 0% 98%;
+    --accent: 142 76% 36%;
+    --accent-foreground: 220 27% 4%;
 
-    --destructive: 0 84.2% 60.2%;
-    --destructive-foreground: 0 0% 98%;
-
-    --border: 240 3.7% 15.9%;
-    --input: 240 3.7% 15.9%;
-    --ring: 142 76% 36%;
+    --destructive: 0 84% 60%;
+    --destructive-foreground: 210 40% 98%;
 
     --success: 142 76% 36%;
-    --success-foreground: 0 0% 98%;
-    
-    --warning: 38 92% 50%;
-    --warning-foreground: 0 0% 98%;
-    
-    --error: 0 84.2% 60.2%;
-    --error-foreground: 0 0% 98%;
+    --success-foreground: 220 27% 4%;
+
+    --warning: 45 93% 47%;
+    --warning-foreground: 220 27% 4%;
+
+    --border: 217 32% 17%;
+    --input: 217 32% 17%;
+    --ring: 142 76% 36%;
 
     --radius: 0.75rem;
 
-    --sidebar-background: 0 0% 98%;
+    /* Crypto-specific colors */
+    --crypto-bg: 220 27% 4%;
+    --crypto-card: 220 19% 6%;
+    --crypto-border: 217 32% 17%;
+    --crypto-green: 142 76% 36%;
+    --crypto-red: 0 84% 60%;
+    --crypto-yellow: 45 93% 47%;
+    --crypto-text-primary: 210 40% 98%;
+    --crypto-text-secondary: 217 10% 64%;
 
-    --sidebar-foreground: 240 5.3% 26.1%;
+    /* Gradients */
+    --gradient-crypto: linear-gradient(135deg, hsl(var(--crypto-green)) 0%, hsl(var(--crypto-green) / 0.8) 100%);
+    --gradient-card: linear-gradient(145deg, hsl(var(--crypto-card)) 0%, hsl(var(--crypto-card) / 0.9) 100%);
+    
+    /* Shadows and glows */
+    --shadow-crypto: 0 4px 24px hsl(var(--crypto-green) / 0.1);
+    --shadow-card: 0 2px 16px hsl(220 27% 4% / 0.4);
+    --glow-success: 0 0 20px hsl(var(--crypto-green) / 0.3);
+    --glow-danger: 0 0 20px hsl(var(--crypto-red) / 0.3);
 
-    --sidebar-primary: 240 5.9% 10%;
-
-    --sidebar-primary-foreground: 0 0% 98%;
-
-    --sidebar-accent: 240 4.8% 95.9%;
-
-    --sidebar-accent-foreground: 240 5.9% 10%;
-
-    --sidebar-border: 220 13% 91%;
-
-    --sidebar-ring: 217.2 91.2% 59.8%;
+    --sidebar-background: 220 27% 4%;
+    --sidebar-foreground: 210 40% 98%;
+    --sidebar-primary: 142 76% 36%;
+    --sidebar-primary-foreground: 220 27% 4%;
+    --sidebar-accent: 220 15% 12%;
+    --sidebar-accent-foreground: 210 40% 98%;
+    --sidebar-border: 217 32% 17%;
+    --sidebar-ring: 142 76% 36%;
   }
 
   .light {
     --background: 0 0% 100%;
-    --foreground: 240 10% 3.9%;
-
+    --foreground: 222.2 84% 4.9%;
     --card: 0 0% 100%;
-    --card-foreground: 240 10% 3.9%;
-
+    --card-foreground: 222.2 84% 4.9%;
     --popover: 0 0% 100%;
-    --popover-foreground: 240 10% 3.9%;
-
+    --popover-foreground: 222.2 84% 4.9%;
     --primary: 142 76% 36%;
-    --primary-foreground: 0 0% 98%;
-
+    --primary-foreground: 210 40% 98%;
     --secondary: 210 40% 96%;
-    --secondary-foreground: 240 5.9% 10%;
-
+    --secondary-foreground: 222.2 84% 4.9%;
     --muted: 210 40% 96%;
     --muted-foreground: 215.4 16.3% 46.9%;
-
     --accent: 210 40% 96%;
-    --accent-foreground: 240 5.9% 10%;
-
-    --destructive: 0 84.2% 60.2%;
-    --destructive-foreground: 0 0% 98%;
-
+    --accent-foreground: 222.2 84% 4.9%;
+    --destructive: 0 84% 60%;
+    --destructive-foreground: 210 40% 98%;
     --border: 214.3 31.8% 91.4%;
     --input: 214.3 31.8% 91.4%;
     --ring: 142 76% 36%;
 
-    --success: 142 76% 36%;
-    --success-foreground: 0 0% 98%;
-    
-    --warning: 38 92% 50%;
-    --warning-foreground: 0 0% 98%;
-    
-    --error: 0 84.2% 60.2%;
-    --error-foreground: 0 0% 98%;
+    /* Crypto-specific light colors */
+    --crypto-bg: 0 0% 100%;
+    --crypto-card: 0 0% 98%;
+    --crypto-border: 214.3 31.8% 91.4%;
+    --crypto-text-primary: 222.2 84% 4.9%;
+    --crypto-text-secondary: 215.4 16.3% 46.9%;
+
+    --sidebar-background: 0 0% 100%;
+    --sidebar-foreground: 222.2 84% 4.9%;
+    --sidebar-primary: 142 76% 36%;
+    --sidebar-primary-foreground: 210 40% 98%;
+    --sidebar-accent: 210 40% 96%;
+    --sidebar-accent-foreground: 222.2 84% 4.9%;
+    --sidebar-border: 214.3 31.8% 91.4%;
+    --sidebar-ring: 142 76% 36%;
+  }
+
+  .dark {
+    --background: 220 27% 4%;
+    --foreground: 210 40% 98%;
+    --card: 220 19% 6%;
+    --card-foreground: 210 40% 98%;
+    --popover: 220 19% 6%;
+    --popover-foreground: 210 40% 98%;
+    --primary: 142 76% 36%;
+    --primary-foreground: 220 27% 4%;
+    --secondary: 220 15% 12%;
+    --secondary-foreground: 210 40% 98%;
+    --muted: 220 15% 12%;
+    --muted-foreground: 217 10% 64%;
+    --accent: 142 76% 36%;
+    --accent-foreground: 220 27% 4%;
+    --destructive: 0 84% 60%;
+    --destructive-foreground: 210 40% 98%;
+    --border: 217 32% 17%;
+    --input: 217 32% 17%;
+    --ring: 142 76% 36%;
   }
 }
 
@@ -111,5 +143,215 @@ All colors MUST be HSL.
 
   body {
     @apply bg-background text-foreground;
+  }
+}
+
+/* RTL Support */
+@layer utilities {
+  /* RTL margins and paddings - Only keeping used classes */
+  [dir="rtl"] .mr-2 {
+    margin-left: 0.5rem;
+    margin-right: 0;
+  }
+  
+  [dir="rtl"] .ml-2 {
+    margin-right: 0.5rem;
+    margin-left: 0;
+  }
+  
+  [dir="rtl"] .mr-3 {
+    margin-left: 0.75rem;
+    margin-right: 0;
+  }
+  
+  [dir="rtl"] .ml-3 {
+    margin-right: 0.75rem;
+    margin-left: 0;
+  }
+  
+  [dir="rtl"] .mr-4 {
+    margin-left: 1rem;
+    margin-right: 0;
+  }
+  
+  [dir="rtl"] .ml-4 {
+    margin-right: 1rem;
+    margin-left: 0;
+  }
+
+  [dir="rtl"] .pl-3 {
+    padding-right: 0.75rem;
+    padding-left: 0;
+  }
+  
+  [dir="rtl"] .pr-3 {
+    padding-left: 0.75rem;
+    padding-right: 0;
+  }
+  
+  [dir="rtl"] .pl-4 {
+    padding-right: 1rem;
+    padding-left: 0;
+  }
+  
+  [dir="rtl"] .pr-4 {
+    padding-left: 1rem;
+    padding-right: 0;
+  }
+
+  [dir="rtl"] .pl-10 {
+    padding-right: 2.5rem;
+    padding-left: 0;
+  }
+  
+  [dir="rtl"] .pr-10 {
+    padding-left: 2.5rem;
+    padding-right: 0;
+  }
+
+  /* RTL border styling for active sidebar items */
+  [dir="rtl"] .border-r-2 {
+    border-right-width: 0;
+    border-left-width: 2px;
+  }
+
+  /* Sidebar positioning for RTL */
+  .sidebar-right {
+    position: fixed !important;
+    right: 0 !important;
+    left: auto !important;
+  }
+  
+  .sidebar-left {
+    position: fixed !important;
+    left: 0 !important;
+    right: auto !important;
+  }
+
+  /* Mobile sidebar positioning for Arabic */
+  @media (max-width: 767px) {
+    /* Force mobile sidebar to appear on correct side based on language */
+    [data-side="right"] {
+      right: 0 !important;
+      left: auto !important;
+      transform: translateX(0) !important;
+    }
+    
+    [data-side="left"] {
+      left: 0 !important;
+      right: auto !important;
+      transform: translateX(0) !important;
+    }
+
+    /* Override Radix UI Sheet positioning */
+    [data-radix-dialog-content][data-side="right"] {
+      right: 0 !important;
+      left: auto !important;
+      transform: translateX(0) !important;
+    }
+    
+    [data-radix-dialog-content][data-side="left"] {
+      left: 0 !important;
+      right: auto !important;
+      transform: translateX(0) !important;
+    }
+
+    /* Mobile sidebar classes */
+    .mobile-sidebar-right {
+      right: 0 !important;
+      left: auto !important;
+      transform: translateX(0) !important;
+    }
+    
+    .mobile-sidebar-left {
+      left: 0 !important;
+      right: auto !important;
+      transform: translateX(0) !important;
+    }
+
+    /* Custom animations for mobile sidebar */
+    @keyframes slideInFromRight {
+      0% {
+        transform: translateX(100%);
+        right: -100%;
+      }
+      100% {
+        transform: translateX(0);
+        right: 0;
+      }
+    }
+    
+    @keyframes slideInFromLeft {
+      0% {
+        transform: translateX(-100%);
+        left: -100%;
+      }
+      100% {
+        transform: translateX(0);
+        left: 0;
+      }
+    }
+
+    /* Override Radix UI Sheet default animations */
+    [data-radix-dialog-content][data-side="right"] {
+      animation: slideInFromRight 0.3s ease-out !important;
+    }
+    
+    [data-radix-dialog-content][data-side="left"] {
+      animation: slideInFromLeft 0.3s ease-out !important;
+    }
+  }
+
+  /* SidebarTrigger positioning for RTL */
+  [dir="rtl"] [data-sidebar="trigger"] {
+    position: relative !important;
+    right: auto !important;
+    left: auto !important;
+    top: auto !important;
+    margin-left: 0 !important;
+    margin-right: 1rem !important;
+  }
+  
+  [dir="ltr"] [data-sidebar="trigger"] {
+    position: relative !important;
+    left: auto !important;
+    right: auto !important;
+    top: auto !important;
+    margin-left: 1rem !important;
+    margin-right: 0 !important;
+  }
+
+  /* Override margin classes for SidebarTrigger in RTL */
+  [dir="rtl"] [data-sidebar="trigger"].ml-4 {
+    margin-left: 0 !important;
+    margin-right: 1rem !important;
+  }
+  
+  [dir="rtl"] [data-sidebar="trigger"].mr-4 {
+    margin-left: 0 !important;
+    margin-right: 1rem !important;
+  }
+
+  /* RTL Switch component fixes */
+  .rtl-switch {
+    direction: ltr !important;
+  }
+  
+  /* Ensure switch maintains LTR behavior in RTL context */
+  [dir="rtl"] .rtl-switch {
+    direction: ltr !important;
+  }
+  
+  [dir="rtl"] .rtl-switch * {
+    direction: ltr !important;
+  }
+  
+  /* Prevent RTL from affecting switch thumb positioning */
+  [dir="rtl"] .rtl-switch [data-state="checked"] {
+    transform: translateX(1.25rem) !important; /* Keep original LTR behavior */
+  }
+  
+  [dir="rtl"] .rtl-switch [data-state="unchecked"] {
+    transform: translateX(0) !important;
   }
 }

@@ -1,0 +1,163 @@
+page_slug,title_en,title_ar,content_en,content_ar,links,effective_date,meta_title_en,meta_description_en,published
+cookie-policy,Cookie Policy,سياسة ملفات تعريف الارتباط,"This Cookie Policy forms part of our [PRIVACY_POLICY].
+
+We use:
+• Essential cookies — required for site security and login.
+• Preference cookies — remember your settings (optional).
+• Analytics cookies (Matomo) — anonymized usage data to improve performance.
+
+We do not use third-party advertising cookies.
+
+You can disable cookies in your browser settings at any time. Disabling essential cookies may limit certain functionalities.
+
+By continuing to browse Bitiq.ai, you consent to our use of cookies as described here.
+
+For questions, contact hello@bitiq.ai.","تشكل سياسة ملفات تعريف الارتباط هذه جزءاً من [PRIVACY_POLICY].
+
+نستخدم:
+• ملفات تعريف ارتباط أساسية — مطلوبة لأمان الموقع وتسجيل الدخول.
+• ملفات تعريف ارتباط التفضيلات — تذكر إعداداتك (اختياري).
+• ملفات تعريف ارتباط التحليلات (Matomo) — بيانات استخدام مجهولة لتحسين الأداء.
+
+لا نستخدم ملفات تعريف ارتباط إعلانية من جهات خارجية.
+
+يمكنك تعطيل ملفات تعريف الارتباط في إعدادات المتصفح في أي وقت. قد يؤدي تعطيل ملفات تعريف الارتباط الأساسية إلى الحد من بعض الوظائف.
+
+من خلال الاستمرار في تصفح Bitiq.ai، فإنك توافق على استخدامنا لملفات تعريف الارتباط كما هو موضح هنا.
+
+للأسئلة، اتصل بـ hello@bitiq.ai.","[{""id"": ""PRIVACY_POLICY"", ""text_en"": ""Privacy Policy"", ""text_ar"": ""سياسة الخصوصية"", ""href"": ""/legal/privacy-policy"", ""type"": ""internal""}]","January 1, 2025",Cookie Policy – Bitiq.ai,Bitiq.ai uses minimal cookies for functionality and analytics. Learn how to manage or disable cookies while keeping essential features active.,true
+acceptable-use-policy,Acceptable Use Policy (AUP),سياسة الاستخدام المقبول,"This Acceptable Use Policy forms part of our [TERMS_CONDITIONS].
+
+Purpose
+
+This Acceptable Use Policy defines proper and prohibited uses of Bitiq.ai's platform and services. All users must comply with this AUP to ensure security, fairness, and legal compliance.
+
+Prohibited Activities
+
+You may not:
+• Use Bitiq.ai for unlawful, fraudulent, or harmful purposes.
+• Access or attempt to access other users' data without permission.
+• Reverse engineer, modify, or replicate any part of our software.
+• Resell or redistribute signals, AI outputs, or automation tools without authorization.
+• Overload the system or attempt denial-of-service or spam attacks.
+• Use the platform to spread malicious code or phishing content.
+
+Violation of this AUP may lead to immediate account suspension or termination without refund.
+
+Security
+
+You are responsible for maintaining the confidentiality of your credentials and any exchange API keys. Do not share or expose keys publicly. Bitiq.ai will never request your private keys, seed phrases, or withdrawal permissions.
+
+Reporting Violations
+
+To report abuse or security concerns, email hello@bitiq.ai. We investigate all legitimate reports promptly.
+
+Enforcement
+
+Bitiq.ai reserves the right to limit, suspend, or terminate access to users who violate this AUP. Serious or repeated violations may result in permanent bans and legal action.
+
+Acknowledgement
+
+By using Bitiq.ai, you confirm that you have read and agree to abide by this Acceptable Use Policy.","تشكل سياسة الاستخدام المقبول هذه جزءاً من [TERMS_CONDITIONS].
+
+الغرض
+
+تحدد سياسة الاستخدام المقبول هذه الاستخدامات الصحيحة والمحظورة لمنصة Bitiq.ai وخدماتها. يجب على جميع المستخدمين الامتثال لهذه السياسة لضمان الأمان والعدالة والامتثال القانوني.
+
+الأنشطة المحظورة
+
+لا يجوز لك:
+• استخدام Bitiq.ai لأغراض غير قانونية أو احتيالية أو ضارة.
+• الوصول أو محاولة الوصول إلى بيانات مستخدمين آخرين دون إذن.
+• إجراء هندسة عكسية أو تعديل أو نسخ أي جزء من برامجنا.
+• إعادة بيع أو إعادة توزيع الإشارات أو مخرجات الذكاء الاصطناعي أو أدوات الأتمتة دون تصريح.
+• تحميل النظام بشكل زائد أو محاولة هجمات حجب الخدمة أو البريد العشوائي.
+• استخدام المنصة لنشر برامج ضارة أو محتوى تصيد.
+
+قد يؤدي انتهاك هذه السياسة إلى تعليق الحساب أو إنهائه فوراً دون استرداد.
+
+الأمان
+
+أنت مسؤول عن الحفاظ على سرية بيانات الاعتماد الخاصة بك وأي مفاتيح API للصرافة. لا تشارك المفاتيح أو تعرضها علناً. لن تطلب Bitiq.ai أبداً مفاتيحك الخاصة أو عبارات الاسترداد أو أذونات السحب.
+
+الإبلاغ عن الانتهاكات
+
+للإبلاغ عن إساءة استخدام أو مخاوف أمنية، أرسل بريداً إلكترونياً إلى hello@bitiq.ai. نحقق في جميع التقارير المشروعة على الفور.
+
+التنفيذ
+
+تحتفظ Bitiq.ai بالحق في تقييد أو تعليق أو إنهاء الوصول للمستخدمين الذين ينتهكون هذه السياسة. قد تؤدي الانتهاكات الخطيرة أو المتكررة إلى حظر دائم وإجراءات قانونية.
+
+الإقرار
+
+باستخدام Bitiq.ai، فإنك تؤكد أنك قرأت ووافقت على الالتزام بسياسة الاستخدام المقبول هذه.","[{""id"": ""TERMS_CONDITIONS"", ""text_en"": ""Terms and Conditions"", ""text_ar"": ""الشروط والأحكام"", ""href"": ""/legal/terms"", ""type"": ""internal""}]","January 1, 2025",Acceptable Use Policy (AUP) – Bitiq.ai,"View Bitiq.ai's AUP outlining permitted and prohibited uses of our AI signals, automation tools, and trading features. Stay compliant and secure.",true
+refund-policy,Refund Policy,سياسة الاسترداد,"Crypto Payments
+
+All payments to Bitiq.ai are made in cryptocurrency and processed by trusted third-party providers (e.g., OxaPay, Coinbase Commerce, NOWPayments, BitPay, BTCPay). Because crypto transactions are irreversible, payments are final once confirmed on the blockchain.
+
+Refund Eligibility
+
+Bitiq.ai may, at its discretion, grant partial or full refunds within 7 days of the first purchase, provided that: You are a new customer; and No significant usage has occurred (AI queries, autotrades, or signal access). Requests must be sent to hello@bitiq.ai and include your wallet address and transaction reference.
+
+Refund Method
+
+Approved refunds will be issued in cryptocurrency at the current market rate, minus network and processor fees. Refunds are not guaranteed and are reviewed on a case-by-case basis.
+
+No Ongoing Refund Rights
+
+Renewals, repeated purchases, or partially used subscription periods are non-refundable.","مدفوعات العملات المشفرة
+
+تتم جميع المدفوعات إلى Bitiq.ai بالعملة المشفرة وتتم معالجتها من قبل مزودي طرف ثالث موثوقين (مثل OxaPay وCoinbase Commerce وNOWPayments وBitPay وBTCPay). نظراً لأن معاملات العملات المشفرة لا رجعة فيها، فإن المدفوعات نهائية بمجرد تأكيدها على البلوكشين.
+
+أهلية الاسترداد
+
+قد تمنح Bitiq.ai، وفقاً لتقديرها، استردادات جزئية أو كاملة في غضون 7 أيام من الشراء الأول، بشرط أن: تكون عميلاً جديداً؛ و لم يحدث استخدام كبير (استعلامات الذكاء الاصطناعي أو الصفقات الآلية أو الوصول إلى الإشارات). يجب إرسال الطلبات إلى hello@bitiq.ai وتتضمن عنوان محفظتك ومرجع المعاملة.
+
+طريقة الاسترداد
+
+سيتم إصدار المبالغ المستردة المعتمدة بالعملة المشفرة بسعر السوق الحالي، مطروحاً منها رسوم الشبكة والمعالج. المبالغ المستردة غير مضمونة ويتم مراجعتها على أساس كل حالة على حدة.
+
+لا توجد حقوق استرداد مستمرة
+
+التجديدات أو المشتريات المتكررة أو فترات الاشتراك المستخدمة جزئياً غير قابلة للاسترداد.","[]","January 1, 2025",Refund Policy – Bitiq.ai,"Understand Bitiq.ai's refund terms for crypto payments. All transactions are final once confirmed on-chain, with limited 7-day refund eligibility for new users.",true
+risk-disclosure,Risk Disclosure,الإفصاح عن المخاطر,"Purpose
+
+This Risk Disclosure outlines the potential financial risks associated with using Bitiq.ai and its services, including AI Signals, Bitiq.ai Copilot, and Autotrading tools. Cryptocurrency markets are volatile and unpredictable. You should carefully assess your financial situation, level of experience, and risk tolerance before trading or using automated systems.
+
+No Financial Advice
+
+Bitiq.ai provides analysis, automation, and AI-based insights for informational and educational purposes only. We do not provide financial, legal, or tax advice. Any action you take based on our information or tools is at your own risk.
+
+Risk of Loss
+
+Cryptocurrency prices are highly volatile and may experience significant fluctuations. Past performance is not indicative of future results. Using leverage or automation can amplify both gains and losses. You may lose all or part of your invested capital. Bitiq.ai shall not be responsible for losses arising from market movements, automation errors, exchange downtime, or user misconfiguration.
+
+No Custody or Trading on Behalf
+
+Bitiq.ai is non-custodial. All trades occur on your own exchange account using API connections you authorize. We never hold your funds, store private keys, or trade on your behalf.
+
+Acknowledgement
+
+By using our services, you confirm that you understand the risks involved and accept full responsibility for your decisions. For questions, contact hello@bitiq.ai.","الغرض
+
+يوضح الإفصاح عن المخاطر هذا المخاطر المالية المحتملة المرتبطة باستخدام Bitiq.ai وخدماتها، بما في ذلك إشارات الذكاء الاصطناعي وBitiq.ai Copilot وأدوات التداول الآلي. أسواق العملات المشفرة متقلبة ولا يمكن التنبؤ بها. يجب عليك تقييم وضعك المالي ومستوى خبرتك وتحمل المخاطر بعناية قبل التداول أو استخدام الأنظمة الآلية.
+
+لا توجد نصيحة مالية
+
+توفر Bitiq.ai التحليل والأتمتة والرؤى القائمة على الذكاء الاصطناعي لأغراض إعلامية وتعليمية فقط. لا نقدم نصائح مالية أو قانونية أو ضريبية. أي إجراء تتخذه بناءً على معلوماتنا أو أدواتنا يكون على مسؤوليتك الخاصة.
+
+مخاطر الخسارة
+
+أسعار العملات المشفرة شديدة التقلب وقد تشهد تقلبات كبيرة. الأداء السابق ليس مؤشراً على النتائج المستقبلية. يمكن أن يؤدي استخدام الرافعة المالية أو الأتمتة إلى تضخيم المكاسب والخسائر. قد تفقد كل أو جزء من رأس المال المستثمر. لن تكون Bitiq.ai مسؤولة عن الخسائر الناشئة عن تحركات السوق أو أخطاء الأتمتة أو توقف الصرافة أو سوء تكوين المستخدم.
+
+لا حضانة أو تداول نيابة عنك
+
+Bitiq.ai غير احتجازية. تحدث جميع الصفقات في حساب الصرافة الخاص بك باستخدام اتصالات API التي تصرح بها. لا نحتفظ أبداً بأموالك أو نخزن المفاتيح الخاصة أو نتداول نيابة عنك.
+
+الإقرار
+
+باستخدام خدماتنا، فإنك تؤكد أنك تفهم المخاطر المعنية وتقبل المسؤولية الكاملة عن قراراتك. للأسئلة، اتصل بـ hello@bitiq.ai.","[]","January 1, 2025",Risk Disclosure – Bitiq.ai,"Trading crypto involves risk. Discover how Bitiq.ai helps users make informed decisions while reminding you that we don't guarantee profits or offer financial advice.",true
+privacy-policy,Privacy Policy,سياسة الخصوصية,"Welcome to Bitiq.ai. This Privacy Policy explains what information we collect, how we use it, and your rights. Use of Bitiq.ai is also subject to our [TERMS_CONDITIONS]. If you have questions, contact us at hello@bitiq.ai. NOTE: Full content from original PrivacyPolicy.tsx component should be added here - 12 sections including: What Information We Collect, How We Use Your Information, Payment & Crypto Processing, AI & Data Handling, Sharing & Disclosure, Data Retention, Security, Cookies & Analytics, Your Rights, Children, Changes to This Policy, Contact & Legal Notice.","مرحباً بك في Bitiq.ai. توضح سياسة الخصوصية هذه المعلومات التي نجمعها وكيفية استخدامها وحقوقك. يخضع استخدام Bitiq.ai أيضاً لـ [TERMS_CONDITIONS]. إذا كانت لديك أسئلة، اتصل بنا على hello@bitiq.ai. ملاحظة: يجب إضافة المحتوى الكامل من مكون PrivacyPolicy.tsx الأصلي هنا - 12 قسماً.","[{""id"": ""TERMS_CONDITIONS"", ""text_en"": ""Terms and Conditions"", ""text_ar"": ""الشروط والأحكام"", ""href"": ""/legal/terms"", ""type"": ""internal""}, {""id"": ""REFUND_POLICY"", ""text_en"": ""Refund Policy"", ""text_ar"": ""سياسة الاسترداد"", ""href"": ""/legal/refund-policy"", ""type"": ""internal""}]","January 1, 2025",Privacy Policy – Bitiq.ai,"Learn how Bitiq.ai collects, uses, and protects your personal data. We accept crypto payments only and never store wallet addresses or trade on your behalf.",true
+sales-terms,General Terms and Conditions of Sale,الشروط والأحكام العامة للبيع,"Welcome to Bitiq.ai. These General Terms and Conditions of Sale govern all paid subscriptions and services. NOTE: Full content from original SalesTerms.tsx component should be added here - 14 sections including: Introduction, Acceptance of the GTCS, Description of Services, Subscription Plans, Pricing and Payment, Subscription Activation and Renewal, Refund Policy and Right of Withdrawal, User Responsibilities, Intellectual Property, Limitation of Liability, Modification or Suspension of Services, Dispute Resolution and Governing Law, Miscellaneous, Entry into Force, Contact.","مرحباً بك في Bitiq.ai. تحكم الشروط والأحكام العامة للبيع هذه جميع الاشتراكات والخدمات المدفوعة. ملاحظة: يجب إضافة المحتوى الكامل من مكون SalesTerms.tsx الأصلي هنا - 14 قسماً.","[{""id"": ""REFUND_POLICY"", ""text_en"": ""Refund Policy"", ""text_ar"": ""سياسة الاسترداد"", ""href"": ""/legal/refund-policy"", ""type"": ""internal""}]","January 1, 2025",General Terms of Sale – Bitiq.ai,"Review Bitiq.ai's General Terms of Sale for paid plans and crypto payments. Includes subscription details, refund rules, and service conditions.",true
+terms-and-conditions,Legal Terms and Conditions,الشروط والأحكام القانونية,"Welcome to Bitiq.ai. These Legal Terms and Conditions define your rights, obligations, and limitations while using our platform. NOTE: Full content from original TermsAndConditions.tsx component should be added here - 13 sections including: Introduction, Acceptance of Terms, Registration and User Account, Use of Services, Intellectual Property, Financial-Risk Disclaimer, Limitation of Liability, Suspension or Termination, Service and Price Modifications, Governing Law and Dispute Resolution, Force Majeure, Miscellaneous, Contact and Legal Notice.","مرحباً بك في Bitiq.ai. تحدد الشروط والأحكام القانونية هذه حقوقك والتزاماتك وقيودك أثناء استخدام منصتنا. ملاحظة: يجب إضافة المحتوى الكامل من مكون TermsAndConditions.tsx الأصلي هنا - 13 قسماً.","[{""id"": ""PRIVACY_POLICY"", ""text_en"": ""Privacy Policy"", ""text_ar"": ""سياسة الخصوصية"", ""href"": ""/legal/privacy-policy"", ""type"": ""internal""}]","January 1, 2025",Terms & Conditions – Bitiq.ai,"Read the official Terms and Conditions for Bitiq.ai. Learn how you can use our AI trading tools, copilot, and autotrading features responsibly.",true
+
