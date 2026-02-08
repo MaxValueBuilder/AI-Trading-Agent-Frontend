@@ -3,15 +3,6 @@ importScripts('https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js'
 importScripts('https://www.gstatic.com/firebasejs/10.7.1/firebase-messaging-compat.js');
 
 // Initialize Firebase in the service worker
-const firebaseConfig = {
-  apiKey: 'AIzaSyCDgh9iu7KH-mOGAC77ys6m3Pm15H1Lksk',
-  authDomain: 'bitiqai-v2.firebaseapp.com',
-  projectId: 'bitiqai-v2',
-  storageBucket: 'bitiqai-v2.firebasestorage.app',
-  messagingSenderId: '184548544565',
-  appId: '1:184548544565:web:1eb58fe817790f0e2b617c'
-};
-
 firebase.initializeApp(firebaseConfig);
 
 // Retrieve an instance of Firebase Messaging so that it can handle background messages
